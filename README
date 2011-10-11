@@ -1,5 +1,14 @@
 PHP GeoIP OOP (geoipo)
-An object oriented PHP module for GeoIP from Maxmind
+An object oriented PHP module for GeoIP from Maxmind.
+
+This project has been built to solve two problems of the current geoip module
+for PHP.
+
+1) Be Object Oriented
+2) Allow custom directories to be set outside of PHP.INI.
+
+To do this the original would have required too much refactoring, so I have
+I have built this from the ground up.
 
 --------
 

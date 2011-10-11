@@ -12,7 +12,7 @@ echo PHP_EOL, PHP_EOL;
 
 echo "Use", PHP_EOL;
 echo "---------", PHP_EOL;
-$geo = new GeoIP('64.85.165.162');
+$geo = new GeoIP('squirrelshaterobots.com');
 var_dump(
 	$geo,
 	$geo->getCountryCode(),
