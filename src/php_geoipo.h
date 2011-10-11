@@ -11,6 +11,7 @@
 #define PHP_GEOIPO_EXTNAME "geoipo"
 
 #include <GeoIP.h>
+#include <GeoIPCity.h>
 
 // define the module entry point.
 extern zend_module_entry geoipo_module_entry;

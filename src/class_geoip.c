@@ -2,6 +2,7 @@
 #include "php_geoipo.h"
 
 zend_class_entry *class_geoip_ce;
+char *custom_directory;
 
 PHP_MINIT_FUNCTION(class_geoip) {
 	zend_class_entry ce;
@@ -119,13 +120,14 @@ PHP_METHOD(GeoIP, hasDatabase) {
  * a set and you-have-to-forget onetimesetall). */
 
 PHP_METHOD(GeoIP, init) {
-	char *dir;
-	int dir_len;
+	char *dir = NULL;
+	int dir_len = 0;
 
  	zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "|s", &dir, &dir_len);
  
  	//. init the custom directory
-	if(dir_len) {
+	if(dir != NULL) {
+		printf("setup dir: %s %d\n",dir,dir_len);
 		GeoIP_setup_custom_directory(dir);
 	}
 	

@@ -30,6 +30,38 @@ Completed API:
 
 --------
 
+Requirements:
+	
+	* GeoIP C API Library from MaxMind (http://www.maxmind.com/app/c)
+	* Installed GeoIP Databases (if you actually want results...)
+	
+--------
+
+Important Notes:
+	
+	I have no Windows machines. There is no Windows build script nor do I
+	know how to write one or how to Windows Windows Windows.
+	
+	Tested On:
+		OS X Lion with the PHP it comes with.
+		Ubuntu 11.04 with everything from the repositories.
+	
+	On UNIX style systems, the GeoIP database are usually found in
+	/usr/share/GeoIP, /usr/local/share/GeoIP, or some other path similar to
+	that. You will need to create that directory, make sure it has read
+	permissions, and extract your MaxMind databases into it.
+	
+	MaxMind provides two free databases that are updated only once a month,
+	but will probably be more than good enough to get you rolling:
+	
+	* http://geolite.maxmind.com/download/geoip/database/GeoLiteCountry/GeoIP.dat.gz
+	* gunzip it and put it where it needs to be.
+
+	* http://geolite.maxmind.com/download/geoip/database/GeoLiteCity.dat.gz
+	* gunzip it, rename it to GeoIPCity.dat, and put it where it needs to be.
+
+--------
+
 Authors:
 	Bob Majdak Jr (@bobmajdakjr)
 	

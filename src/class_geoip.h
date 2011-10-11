@@ -6,6 +6,8 @@ typedef struct _obj_geoip_s {
 //////////////////////////////////////////
 // class GeoIP ///////////////////////////
 
+extern char * custom_directory;
+
 // internals.
 extern zend_class_entry     *class_geoip_ce;
 static zend_object_handlers  obj_geoip_handlers;
