@@ -217,7 +217,24 @@ PHP_METHOD(GeoIP, getCountryCode) {
 
 PHP_METHOD(GeoIP, getCountryName) {
 
-	return;
+	GeoIP       *geo;
+	const char  *country;
+	zval        *host = geoipo_get_object_property(getThis(),"host");
+ 	
+	if(!GeoIP_db_avail(GEOIP_COUNTRY_EDITION)) {
+		php_error_docref(
+			NULL TSRMLS_CC,
+			E_WARNING, GEOIPO_ERROR_NO_DATABASE,
+			GeoIPDBFileName[GEOIP_COUNTRY_EDITION]
+		); RETURN_FALSE;
+	}
+
+	geo = GeoIP_open_type(GEOIP_COUNTRY_EDITION,GEOIP_STANDARD);
+	country = GeoIP_country_name_by_name(geo,Z_STRVAL_P(host));
+	GeoIP_delete(geo);
+
+	if(country == NULL) return;
+	RETURN_STRING(country,1);	
 }
 
 PHP_METHOD(GeoIP, getRecord) {

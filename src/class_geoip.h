@@ -20,7 +20,7 @@ PHP_METHOD(GeoIP, init);
 PHP_METHOD(GeoIP, __construct);
 PHP_METHOD(GeoIP, getContinentCode);
 PHP_METHOD(GeoIP, getCountryCode);
-PHP_METHOD(GeoIP, getCountryName);      //x
+PHP_METHOD(GeoIP, getCountryName);
 PHP_METHOD(GeoIP, getRecord);           //x
 
 // method catalogue.
