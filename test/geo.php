@@ -17,7 +17,8 @@ var_dump(
 	$geo,
 	$geo->getCountry(),
 	$geo->getCountry(2),
-	$geo->getCountry(3)
+	$geo->getCountry(3),
+	$geo->getContinent()
 );
 
 ?>

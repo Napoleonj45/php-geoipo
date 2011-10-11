@@ -112,6 +112,31 @@ PHP_METHOD(GeoIP, __construct) {
  	return;
 }
 
+/* string GeoIP->getContinent(void);
+ * Get the contientnet code for wherever the country of the currently
+ * stored host value is. */
+
+PHP_METHOD(GeoIP, getContinent) {
+	GeoIP *geo;
+	int    ccode;
+	zval  *host = geoipo_get_object_property(getThis(),"host");
+
+	if(!GeoIP_db_avail(GEOIP_COUNTRY_EDITION)) {
+		php_error_docref(
+			NULL TSRMLS_CC,
+			E_WARNING, GEOIPO_ERROR_NO_DATABASE,
+			GeoIPDBFileName[GEOIP_COUNTRY_EDITION]
+		); RETURN_FALSE;
+	}
+	
+	geo = GeoIP_open_type(GEOIP_COUNTRY_EDITION,GEOIP_STANDARD);
+	ccode = GeoIP_id_by_name(geo,Z_STRVAL_P(host));
+	GeoIP_delete(geo);
+	
+	if(ccode == 0) return;
+	RETURN_STRING(GeoIP_country_continent[ccode],1)
+}
+
 /* string GeoIP->getCountry(optional int length);
  * Get the country code for the currently stored host value from the
  * GeoIP database. The optional int length may be 2 or 3, for selecting
@@ -119,12 +144,10 @@ PHP_METHOD(GeoIP, __construct) {
  * characters. */
  
 PHP_METHOD(GeoIP, getCountry) {
-	GeoIP *geo;
-	char *country;
-	long abbrlen = 0;
-	
-	zval *this = getThis();	
-	zval *host = geoipo_get_object_property(this,"host");
+	GeoIP       *geo;
+	const char  *country;
+	long         abbrlen = 0;
+	zval        *host = geoipo_get_object_property(getThis(),"host");
 
  	zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "|l", &abbrlen);
  	if(abbrlen != 3) abbrlen = 2;
@@ -132,18 +155,16 @@ PHP_METHOD(GeoIP, getCountry) {
 	if(!GeoIP_db_avail(GEOIP_COUNTRY_EDITION)) {
 		php_error_docref(
 			NULL TSRMLS_CC,
-			E_WARNING,
-			"Unable to find database `%s`",
+			E_WARNING, GEOIPO_ERROR_NO_DATABASE,
 			GeoIPDBFileName[GEOIP_COUNTRY_EDITION]
-		);	
-		RETURN_FALSE;
+		); RETURN_FALSE;
 	}
 
 	geo = GeoIP_open_type(GEOIP_COUNTRY_EDITION,GEOIP_STANDARD);
 	if(abbrlen == 3) country = GeoIP_country_code3_by_name(geo,Z_STRVAL_P(host));
-	else country = GeoIP_country_code_by_name(geo,Z_STRVAL_P(host));
+	else             country = GeoIP_country_code_by_name(geo,Z_STRVAL_P(host));
 	GeoIP_delete(geo);
 
 	if(country == NULL) return;
-	RETURN_STRING(country, 1);		
+	RETURN_STRING(country,1);		
 }

@@ -23,6 +23,8 @@ typedef struct _class_const_list {
 
 zval *geoipo_get_object_property(zval *, const char *);
 
+#define GEOIPO_ERROR_NO_DATABASE "Unable to open database `%s`."
+
 #include "config.h"
 #include "src/class_geoip.h"
 
