@@ -15,7 +15,7 @@ I have built this from the ground up.
 Completed API:
 
 	Static Methods
-	string  GeoIP::getDatabaseFilename(int dbid);
+	string  GeoIP::getDatabaseFile(int dbid);
 	boolean GeoIP::hasDatabase(int dbid);
 	void    GeoIP::init(optional string directory);
 	
