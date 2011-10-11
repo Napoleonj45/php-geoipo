@@ -54,18 +54,39 @@ obj_geoip_new(zend_class_entry *ce TSRMLS_DC)
 	return output;
 }
 
-PHP_METHOD(GeoIP, __construct) {
- 	obj_geoip_s *this = (obj_geoip_s *)zend_object_store_get_object(getThis() TSRMLS_CC);
+PHP_METHOD(GeoIP, __construct) { 	
+ 	char *host;
+	int host_len;
+
+	zval *this = getThis();
+	zval *member;
+	zval *value;
+	
  	
- 	//. maybe do stuff later here.
+ 	if(zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "|s", &host, &host_len) == FAILURE) {
+		return;
+ 	}
+ 
+	MAKE_STD_ZVAL(member); ZVAL_STRING(member,"host",1);
+	MAKE_STD_ZVAL(value); ZVAL_STRING(value,host,1);
+	obj_geoip_handlers.write_property(this,member,value);
  	
  	return;
 }
 
 PHP_METHOD(GeoIP, getCountry) {
-	obj_geoip_s *this = (obj_geoip_s *)zend_object_store_get_object(getThis() TSRMLS_CC);
-
-
+	zval *this = getThis();	
+	zval *member;
+	zval *host;
+	
+	MAKE_STD_ZVAL(member); ZVAL_STRING(member,"host",1)
+	obj_geoip_handlers.read_property(this,member,BP_VAR_IS);
+	
+	if(Z_STRVAL_P(host) == NULL) {
+		RETURN_FALSE;
+	}
+	
+	puts(Z_STRVAL_P(host));
 
 	return;
 }
