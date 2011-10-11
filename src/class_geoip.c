@@ -117,18 +117,26 @@ PHP_METHOD(GeoIP, __construct) {
  * from the GeoIP database. */
  
 PHP_METHOD(GeoIP, getCountry) {
+	GeoIP *geo;
+	char *country;
+	
 	zval *this = getThis();	
-	zval *member;
-	zval *host;
+	zval *host = geoipo_get_object_property(this,"host");
 	
-	MAKE_STD_ZVAL(member); ZVAL_STRING(member,"host",1)
-	host = obj_geoip_handlers.read_property(this,member,BP_VAR_IS);
-	
-	if(Z_STRVAL_P(host) == NULL) {
+	if(!GeoIP_db_avail(GEOIP_COUNTRY_EDITION)) {
+		php_error_docref(
+			NULL TSRMLS_CC,
+			E_WARNING,
+			"Unable to find database `%s`",
+			GeoIPDBFileName[GEOIP_COUNTRY_EDITION]
+		);	
 		RETURN_FALSE;
 	}
-	
-	RETURN_STRING(Z_STRVAL_P(host),1);
 
-	return;
+	geo = GeoIP_open_type(GEOIP_COUNTRY_EDITION,GEOIP_STANDARD);
+	country = GeoIP_country_code_by_name(geo,Z_STRVAL_P(host));
+	GeoIP_delete(geo);
+
+	if(country == NULL) return;
+	RETURN_STRING(country, 1);		
 }

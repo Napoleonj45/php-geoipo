@@ -21,6 +21,8 @@ typedef struct _class_const_list {
 	long lc;        // library constant (from geoip)
 } class_const_list;
 
+zval *geoipo_get_object_property(zval *, const char *);
+
 #include "config.h"
 #include "src/class_geoip.h"
 
