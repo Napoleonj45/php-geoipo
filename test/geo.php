@@ -1,6 +1,7 @@
 <?php
 
 $geo = new GeoIP();
-var_dump($geo);
+$geo->host = '64.85.165.162';
+var_dump($geo,$geo->getCountry());
 
 ?>
