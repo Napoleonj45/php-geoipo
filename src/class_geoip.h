@@ -1,23 +1,48 @@
 
 typedef struct _obj_geoip_s {
 	zend_object  std;
-	zval *       host;
 } obj_geoip_s;
 
-//. class methods
+//////////////////////////////////////////
+// class GeoIP ///////////////////////////
+
+// internals.
+extern zend_class_entry     *class_geoip_ce;
+static zend_object_handlers  obj_geoip_handlers;
+zend_object_value            obj_geoip_new(zend_class_entry * TSRMLS_DC);
+
+// methods
+PHP_METHOD(GeoIP, init);
 PHP_METHOD(GeoIP, __construct);
 PHP_METHOD(GeoIP, getCountry);
-
-static zend_object_handlers  obj_geoip_handlers;
-extern zend_class_entry     *class_geoip_ce;
 static zend_function_entry   class_geoip_methods[] = {
-	PHP_ME(GeoIP, __construct, NULL, (ZEND_ACC_PUBLIC|ZEND_ACC_CTOR))
-	PHP_ME(GeoIP, getCountry,  NULL, ZEND_ACC_PUBLIC)
+	PHP_ME(GeoIP, init,               NULL, (ZEND_ACC_PUBLIC|ZEND_ACC_ALLOW_STATIC))
+	PHP_ME(GeoIP, __construct,        NULL, (ZEND_ACC_PUBLIC|ZEND_ACC_CTOR))
+	PHP_ME(GeoIP, getCountry,         NULL, (ZEND_ACC_PUBLIC))
 	{NULL,NULL,NULL}
 };
 
-//. php class pwners
-zend_object_value obj_geoip_new(zend_class_entry * TSRMLS_DC);
+// constants
+static class_const_list      class_geoip_constants[] = {
+	{ "ASNUM_EDITION",       GEOIP_ASNUM_EDITION },
+	{ "CITY_EDITION_REV0",   GEOIP_CITY_EDITION_REV0 },
+	{ "CITY_EDITION_REV1",   GEOIP_CITY_EDITION_REV1 },
+	{ "CITY_EDITION",        GEOIP_CITY_EDITION_REV1 },	 
+	{ "COUNTRY_EDITION",     GEOIP_COUNTRY_EDITION },
+	{ "DOMAIN_EDITION",      GEOIP_DOMAIN_EDITION },
+	{ "ISP_EDITION",         GEOIP_ISP_EDITION },
+	{ "NETSPEED_EDITION",    GEOIP_NETSPEED_EDITION },
+	{ "ORG_EDITION",         GEOIP_ORG_EDITION },
+	{ "PROXY_EDITION",       GEOIP_PROXY_EDITION },
+	{ "REGION_EDITION_REV0", GEOIP_REGION_EDITION_REV0 },
+	{ "REGION_EDITION_REV1", GEOIP_REGION_EDITION_REV1 },
+	{ "REGION_EDITION",      GEOIP_REGION_EDITION_REV1 },
+	{ "CABLEDSL_SPEED",      GEOIP_CABLEDSL_SPEED },
+	{ "CORPORATE_SPEED",     GEOIP_CORPORATE_SPEED },
+	{ "DAILUP_SPEED",        GEOIP_DIALUP_SPEED },
+	{ "UNKNOWN_SPEED",       GEOIP_UNKNOWN_SPEED },
+	{ NULL,                  NULL }
+};
 
 //. module functions
 PHP_MINIT_FUNCTION(class_geoip);

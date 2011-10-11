@@ -12,7 +12,21 @@ PHP_MINIT_FUNCTION(class_geoip) {
 	class_geoip_ce->create_object = obj_geoip_new;
 	zend_declare_property_null(class_geoip_ce,"host",(sizeof("host")-1),ZEND_ACC_PUBLIC TSRMLS_CC);
 	memcpy(&obj_geoip_handlers,zend_get_std_object_handlers(),sizeof(zend_object_handlers));
-	
+
+	//. register GeoIP constants
+	int a;
+	class_const_list item;
+	for(a = 0; a < sizeof(class_geoip_constants); a++) {	
+		item = (class_const_list)class_geoip_constants[a];
+		if(item.cc == NULL) break;
+
+		zend_declare_class_constant_long(
+			class_geoip_ce,
+			item.cc, strlen(item.cc),
+			(long)item.lc TSRMLS_CC
+		);		
+	}
+
 	return SUCCESS;
 }
 
@@ -25,7 +39,6 @@ obj_geoip_new(zend_class_entry *ce TSRMLS_DC)
 	//. allocate object space.
 	object = ecalloc(1,sizeof(obj_geoip_s));
 	object->std.ce = ce;
-	object->host = NULL;
 	
 	ALLOC_HASHTABLE(object->std.properties);
 	zend_hash_init(
@@ -54,6 +67,32 @@ obj_geoip_new(zend_class_entry *ce TSRMLS_DC)
 	return output;
 }
 
+/* void GeoIP::init(optional string custom_directory)
+ * Initalize the GeoIP library for use. This is a user function so that
+ * a custom directory can be used for the databases. (GeoIP C library is
+ * a set and you-have-to-forget onetimesetall). */
+
+PHP_METHOD(GeoIP, init) {
+	char *dir;
+	int dir_len;
+
+ 	zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "|s", &dir, &dir_len);
+ 
+ 	//. init the custom directory
+	if(dir_len) {
+		GeoIP_setup_custom_directory(dir);
+	}
+	
+	//. init the database files in the library.
+	_GeoIP_setup_dbfilename();
+ 
+ 	return;
+}
+
+/* void GeoIP::__construct(optional string host)
+ * Create an instance of the GeoIP object. If the hostname is given then
+ * store that in the public host property. */
+ 
 PHP_METHOD(GeoIP, __construct) { 	
  	char *host;
 	int host_len;
@@ -61,7 +100,6 @@ PHP_METHOD(GeoIP, __construct) {
 	zval *this = getThis();
 	zval *member;
 	zval *value;
-	
  	
  	if(zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "|s", &host, &host_len) == FAILURE) {
 		return;
@@ -74,19 +112,23 @@ PHP_METHOD(GeoIP, __construct) {
  	return;
 }
 
+/* string GeoIP->getCountry(void);
+ * Get the 2 character country code for the currently stored host value
+ * from the GeoIP database. */
+ 
 PHP_METHOD(GeoIP, getCountry) {
 	zval *this = getThis();	
 	zval *member;
 	zval *host;
 	
 	MAKE_STD_ZVAL(member); ZVAL_STRING(member,"host",1)
-	obj_geoip_handlers.read_property(this,member,BP_VAR_IS);
+	host = obj_geoip_handlers.read_property(this,member,BP_VAR_IS);
 	
 	if(Z_STRVAL_P(host) == NULL) {
 		RETURN_FALSE;
 	}
 	
-	puts(Z_STRVAL_P(host));
+	RETURN_STRING(Z_STRVAL_P(host),1);
 
 	return;
 }
