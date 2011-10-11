@@ -112,17 +112,23 @@ PHP_METHOD(GeoIP, __construct) {
  	return;
 }
 
-/* string GeoIP->getCountry(void);
- * Get the 2 character country code for the currently stored host value
- * from the GeoIP database. */
+/* string GeoIP->getCountry(optional int length);
+ * Get the country code for the currently stored host value from the
+ * GeoIP database. The optional int length may be 2 or 3, for selecting
+ * two or three character abbreviations from GeoIP. The default is two
+ * characters. */
  
 PHP_METHOD(GeoIP, getCountry) {
 	GeoIP *geo;
 	char *country;
+	long abbrlen = 0;
 	
 	zval *this = getThis();	
 	zval *host = geoipo_get_object_property(this,"host");
-	
+
+ 	zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "|l", &abbrlen);
+ 	if(abbrlen != 3) abbrlen = 2;
+ 	
 	if(!GeoIP_db_avail(GEOIP_COUNTRY_EDITION)) {
 		php_error_docref(
 			NULL TSRMLS_CC,
@@ -134,7 +140,8 @@ PHP_METHOD(GeoIP, getCountry) {
 	}
 
 	geo = GeoIP_open_type(GEOIP_COUNTRY_EDITION,GEOIP_STANDARD);
-	country = GeoIP_country_code_by_name(geo,Z_STRVAL_P(host));
+	if(abbrlen == 3) country = GeoIP_country_code3_by_name(geo,Z_STRVAL_P(host));
+	else country = GeoIP_country_code_by_name(geo,Z_STRVAL_P(host));
 	GeoIP_delete(geo);
 
 	if(country == NULL) return;
