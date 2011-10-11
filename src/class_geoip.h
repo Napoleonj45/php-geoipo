@@ -11,18 +11,28 @@ extern zend_class_entry     *class_geoip_ce;
 static zend_object_handlers  obj_geoip_handlers;
 zend_object_value            obj_geoip_new(zend_class_entry * TSRMLS_DC);
 
-// methods
+// static methods.
+PHP_METHOD(GeoIP, getDatabaseFile);
+PHP_METHOD(GeoIP, hasDatabase);
 PHP_METHOD(GeoIP, init);
+
+// instance methods.
 PHP_METHOD(GeoIP, __construct);
 PHP_METHOD(GeoIP, getContinentCode);
 PHP_METHOD(GeoIP, getCountryCode);
-PHP_METHOD(GeoIP, getCountryName);
+PHP_METHOD(GeoIP, getCountryName);      //x
+PHP_METHOD(GeoIP, getRecord);           //x
+
+// method catalogue.
 static zend_function_entry   class_geoip_methods[] = {
-	PHP_ME(GeoIP, init,           NULL, (ZEND_ACC_PUBLIC|ZEND_ACC_ALLOW_STATIC))
-	PHP_ME(GeoIP, __construct,    NULL, (ZEND_ACC_PUBLIC|ZEND_ACC_CTOR))
-	PHP_ME(GeoIP, getContinentCode,   NULL, (ZEND_ACC_PUBLIC))
-	PHP_ME(GeoIP, getCountryCode, NULL, (ZEND_ACC_PUBLIC))
-	PHP_ME(GeoIP, getCountryName, NULL, (ZEND_ACC_PUBLIC))
+	PHP_ME(GeoIP, getDatabaseFile,  NULL, (ZEND_ACC_PUBLIC|ZEND_ACC_ALLOW_STATIC))
+	PHP_ME(GeoIP, hasDatabase,      NULL, (ZEND_ACC_PUBLIC|ZEND_ACC_ALLOW_STATIC))
+	PHP_ME(GeoIP, init,             NULL, (ZEND_ACC_PUBLIC|ZEND_ACC_ALLOW_STATIC))
+	PHP_ME(GeoIP, __construct,      NULL, (ZEND_ACC_PUBLIC|ZEND_ACC_CTOR))
+	PHP_ME(GeoIP, getContinentCode, NULL, (ZEND_ACC_PUBLIC))
+	PHP_ME(GeoIP, getCountryCode,   NULL, (ZEND_ACC_PUBLIC))
+	PHP_ME(GeoIP, getCountryName,   NULL, (ZEND_ACC_PUBLIC))
+	PHP_ME(GeoIP, getRecord,        NULL, (ZEND_ACC_PUBLIC))
 	{NULL,NULL,NULL}
 };
 

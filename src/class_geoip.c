@@ -67,6 +67,52 @@ obj_geoip_new(zend_class_entry *ce TSRMLS_DC)
 	return output;
 }
 
+/* string GeoIP::getDatabaseFilename(int GeoIP::CONSTANT);
+ * Return the path to the filename of the selected database. */
+ 
+PHP_METHOD(GeoIP, getDatabaseFile) {
+	long dbid = 0;
+	
+	if(zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "l", &dbid) == FAILURE) {
+		RETURN_FALSE;
+	}
+	
+	if(dbid < 0 || dbid >= NUM_DB_TYPES) {
+		php_error_docref(
+			NULL TSRMLS_CC,
+			E_WARNING, GEOIPO_ERROR_INVALID_DBID,
+			dbid
+		); RETURN_FALSE;
+	}
+
+	RETURN_STRING(GeoIPDBFileName[dbid],1);
+}
+
+/* boolean GeoIP::hasDatabase(int GeoIP::CONSTANT);
+ * Returns the boolean value of if a specified database is available on
+ * the system. */
+
+PHP_METHOD(GeoIP, hasDatabase) {
+	long dbid = 0;
+
+	if(zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "l", &dbid) == FAILURE) {
+		RETURN_FALSE;
+	}
+
+	if(dbid < 0 || dbid >= NUM_DB_TYPES) {
+		php_error_docref(
+			NULL TSRMLS_CC,
+			E_WARNING, GEOIPO_ERROR_INVALID_DBID,
+			dbid
+		); RETURN_FALSE;
+	}
+	
+	if(!GeoIP_db_avail(dbid)) { RETURN_FALSE; }
+	else { RETURN_TRUE; }
+
+	return;
+}
+
 /* void GeoIP::init(optional string custom_directory)
  * Initalize the GeoIP library for use. This is a user function so that
  * a custom directory can be used for the databases. (GeoIP C library is
@@ -170,6 +216,11 @@ PHP_METHOD(GeoIP, getCountryCode) {
 }
 
 PHP_METHOD(GeoIP, getCountryName) {
+
+	return;
+}
+
+PHP_METHOD(GeoIP, getRecord) {
 
 	return;
 }
