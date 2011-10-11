@@ -14,13 +14,15 @@ zend_object_value            obj_geoip_new(zend_class_entry * TSRMLS_DC);
 // methods
 PHP_METHOD(GeoIP, init);
 PHP_METHOD(GeoIP, __construct);
-PHP_METHOD(GeoIP, getContinent);
-PHP_METHOD(GeoIP, getCountry);
+PHP_METHOD(GeoIP, getContinentCode);
+PHP_METHOD(GeoIP, getCountryCode);
+PHP_METHOD(GeoIP, getCountryName);
 static zend_function_entry   class_geoip_methods[] = {
-	PHP_ME(GeoIP, init,          NULL, (ZEND_ACC_PUBLIC|ZEND_ACC_ALLOW_STATIC))
-	PHP_ME(GeoIP, __construct,   NULL, (ZEND_ACC_PUBLIC|ZEND_ACC_CTOR))
-	PHP_ME(GeoIP, getContinent,  NULL, (ZEND_ACC_PUBLIC))
-	PHP_ME(GeoIP, getCountry,    NULL, (ZEND_ACC_PUBLIC))
+	PHP_ME(GeoIP, init,           NULL, (ZEND_ACC_PUBLIC|ZEND_ACC_ALLOW_STATIC))
+	PHP_ME(GeoIP, __construct,    NULL, (ZEND_ACC_PUBLIC|ZEND_ACC_CTOR))
+	PHP_ME(GeoIP, getContinentCode,   NULL, (ZEND_ACC_PUBLIC))
+	PHP_ME(GeoIP, getCountryCode, NULL, (ZEND_ACC_PUBLIC))
+	PHP_ME(GeoIP, getCountryName, NULL, (ZEND_ACC_PUBLIC))
 	{NULL,NULL,NULL}
 };
 
@@ -46,5 +48,5 @@ static class_const_list      class_geoip_constants[] = {
 	{ NULL,   0 }
 };
 
-//. module functions
+//. module class functions
 PHP_MINIT_FUNCTION(class_geoip);

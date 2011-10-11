@@ -116,7 +116,7 @@ PHP_METHOD(GeoIP, __construct) {
  * Get the contientnet code for wherever the country of the currently
  * stored host value is. */
 
-PHP_METHOD(GeoIP, getContinent) {
+PHP_METHOD(GeoIP, getContinentCode) {
 	GeoIP *geo;
 	int    ccode;
 	zval  *host = geoipo_get_object_property(getThis(),"host");
@@ -143,7 +143,7 @@ PHP_METHOD(GeoIP, getContinent) {
  * two or three character abbreviations from GeoIP. The default is two
  * characters. */
  
-PHP_METHOD(GeoIP, getCountry) {
+PHP_METHOD(GeoIP, getCountryCode) {
 	GeoIP       *geo;
 	const char  *country;
 	long         abbrlen = 0;
@@ -167,4 +167,9 @@ PHP_METHOD(GeoIP, getCountry) {
 
 	if(country == NULL) return;
 	RETURN_STRING(country,1);		
+}
+
+PHP_METHOD(GeoIP, getCountryName) {
+
+	return;
 }

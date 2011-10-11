@@ -15,10 +15,11 @@ echo "---------", PHP_EOL;
 $geo = new GeoIP('64.85.165.162');
 var_dump(
 	$geo,
-	$geo->getCountry(),
-	$geo->getCountry(2),
-	$geo->getCountry(3),
-	$geo->getContinent()
+	$geo->getCountryCode(),
+	$geo->getCountryCode(2),
+	$geo->getCountryCode(3),
+	$geo->getCountryName(),
+	$geo->getContinentCode()
 );
 
 ?>
