@@ -19,7 +19,8 @@ var_dump(
 	$geo->getCountryName(),
 	$geo->getContinentCode(),
 	$geo->getRecord(),
-	$geo->getID()
+	$geo->getID(),
+	$geo->getRegion()
 );
 
 ?>

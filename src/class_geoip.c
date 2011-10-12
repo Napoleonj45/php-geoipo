@@ -298,10 +298,15 @@ PHP_METHOD(GeoIP, getID) {
 	RETURN_LONG(id);
 }
 
+/* object GeoIP->getRecord(void);
+ * Returns an object of the record details for the currently specified host.
+ */
+
 PHP_METHOD(GeoIP, getRecord) {
 
 	GeoIP       *geo;
 	GeoIPRecord *rec;
+	const char  *regname;
 	zval        *host = geoipo_get_object_property(getThis(),"host");
 
 	if(!GeoIP_db_avail(GEOIP_CITY_EDITION_REV1) && !GeoIP_db_avail(GEOIP_CITY_EDITION_REV0)) {
@@ -324,6 +329,8 @@ PHP_METHOD(GeoIP, getRecord) {
 	if(rec == NULL) {
 		RETURN_FALSE;
 	}
+	
+	regname = GeoIP_region_name_by_code(rec->country_code,rec->region);
 
 	//. build the return object.
 	object_init(return_value);
@@ -331,7 +338,8 @@ PHP_METHOD(GeoIP, getRecord) {
 	add_property_string(return_value, "CountryCode",   rec->country_code,   1);
 	add_property_string(return_value, "CountryCode3",  rec->country_code3,  1);
 	add_property_string(return_value, "CountryName",   rec->country_name,   1);
-	add_property_string(return_value, "Region",        rec->region,         1);
+	add_property_string(return_value, "RegionCode",    rec->region,         1);
+	add_property_string(return_value, "RegionName",    regname,             1);
 	add_property_string(return_value, "City",          rec->city,           1);
 	add_property_string(return_value, "PostalCode",    rec->postal_code,    1);
 	add_property_double(return_value, "Latitude",      rec->latitude         );
@@ -341,4 +349,88 @@ PHP_METHOD(GeoIP, getRecord) {
 
 	GeoIPRecord_delete(rec);
 	return;
+}
+
+/* object GeoIP->getRegion(void);
+ * Returns an object of the region (country code, region code, region name). If the specific
+ * region database exists it will use that, else it will fall back to the (potentally)
+ * free city database which also has those details. One of the properties will be the
+ * database id that you can check against the EDITION constants if you needed to know
+ * which one it used. */
+
+PHP_METHOD(GeoIP, getRegion) {
+
+	GeoIP      *geo;
+	long        dbid;
+	const char *regname;
+	zval       *host = geoipo_get_object_property(getThis(),"host");
+
+	//. use the region database if it exists.
+	if(GeoIP_db_avail(GEOIP_REGION_EDITION_REV1) || GeoIP_db_avail(GEOIP_REGION_EDITION_REV0)) {
+		GeoIPRegion *reg;
+
+		if(GeoIP_db_avail(GEOIP_REGION_EDITION_REV1)) {
+			geo = GeoIP_open_type(GEOIP_REGION_EDITION_REV1,GEOIP_STANDARD);
+			dbid = GEOIP_REGION_EDITION_REV1;
+		} else {
+			geo = GeoIP_open_type(GEOIP_REGION_EDITION_REV0,GEOIP_STANDARD);
+			dbid = GEOIP_REGION_EDITION_REV0;
+		}
+			
+		reg = GeoIP_region_by_name(geo,Z_STRVAL_P(host));
+		GeoIP_delete(geo);
+
+		if(reg == NULL) {
+			RETURN_FALSE;
+		}
+		
+		regname = GeoIP_region_name_by_code(reg->country_code,reg->region);
+		
+		object_init(return_value);
+		add_property_long(  return_value, "DBID",        dbid                );
+		add_property_string(return_value, "CountryCode", reg->country_code, 1);
+		add_property_string(return_value, "RegionCode",  reg->region,       1);
+		add_property_string(return_value, "RegionName",  regname,           1);
+		GeoIPRegion_delete(reg);
+		return;		
+	}
+	
+	//. else use the city database.
+	else if(GeoIP_db_avail(GEOIP_CITY_EDITION_REV1) || GeoIP_db_avail(GEOIP_CITY_EDITION_REV0)) {
+		GeoIPRecord *rec;
+
+		if(GeoIP_db_avail(GEOIP_CITY_EDITION_REV1)) {
+			geo = GeoIP_open_type(GEOIP_CITY_EDITION_REV1,GEOIP_STANDARD);
+			dbid = GEOIP_CITY_EDITION_REV1;
+		} else {
+			geo = GeoIP_open_type(GEOIP_CITY_EDITION_REV0,GEOIP_STANDARD);
+			dbid = GEOIP_CITY_EDITION_REV0;
+		}
+
+		rec = GeoIP_record_by_name(geo,Z_STRVAL_P(host));
+		GeoIP_delete(geo);
+		
+		if(rec == NULL) {
+			RETURN_FALSE;
+		}
+		
+		regname = GeoIP_region_name_by_code(rec->country_code,rec->region);
+
+		object_init(return_value);
+		add_property_long(  return_value, "DBID",        dbid                );
+		add_property_string(return_value, "CountryCode", rec->country_code, 1);
+		add_property_string(return_value, "RegionCode",  rec->region,       1);
+		add_property_string(return_value, "RegionName",  regname,           1);
+		GeoIPRecord_delete(rec);
+		return;
+	}
+	
+	else {
+		php_error_docref(
+			NULL TSRMLS_CC,
+			E_WARNING, GEOIPO_ERROR_NO_DATABASE,
+			GeoIPDBFileName[GEOIP_CITY_EDITION_REV1]
+		); RETURN_FALSE;
+	}
+
 }

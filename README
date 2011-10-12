@@ -30,6 +30,7 @@ Completed API:
 	string  GeoIP->getCountryName(void);
 	int     GeoIP->getID(void);
 	object  GeoIP->getRecord(void);
+	object  GeoIP->getRegion(void);
 
 --------
 
@@ -92,7 +93,7 @@ licensed under the New BSD License. Here it is...
 
 --------
 
-Copyright (c) 2010-2011, zenthis.org
+Copyright (c) 2010-2011
 All rights reserved.
 
 Redistribution and use in source and binary forms, with or without modification,
