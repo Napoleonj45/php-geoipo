@@ -24,7 +24,8 @@ PHP_METHOD(GeoIP, __construct);
 PHP_METHOD(GeoIP, getContinentCode);
 PHP_METHOD(GeoIP, getCountryCode);
 PHP_METHOD(GeoIP, getCountryName);
-PHP_METHOD(GeoIP, getRecord);           //x
+PHP_METHOD(GeoIP, getID);
+PHP_METHOD(GeoIP, getRecord);
 
 // method catalogue.
 static zend_function_entry   class_geoip_methods[] = {
@@ -36,6 +37,7 @@ static zend_function_entry   class_geoip_methods[] = {
 	PHP_ME(GeoIP, getContinentCode, NULL, (ZEND_ACC_PUBLIC))
 	PHP_ME(GeoIP, getCountryCode,   NULL, (ZEND_ACC_PUBLIC))
 	PHP_ME(GeoIP, getCountryName,   NULL, (ZEND_ACC_PUBLIC))
+	PHP_ME(GeoIP, getID,            NULL, (ZEND_ACC_PUBLIC))
 	PHP_ME(GeoIP, getRecord,        NULL, (ZEND_ACC_PUBLIC))
 	{NULL,NULL,NULL}
 };

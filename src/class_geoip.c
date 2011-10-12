@@ -277,11 +277,32 @@ PHP_METHOD(GeoIP, getCountryName) {
 	RETURN_STRING(country,1);	
 }
 
+PHP_METHOD(GeoIP, getID) {
+	
+	GeoIP *geo;
+	int    id;
+	zval  *host = geoipo_get_object_property(getThis(),"host");
+
+	if(!GeoIP_db_avail(GEOIP_COUNTRY_EDITION)) {
+		php_error_docref(
+			NULL TSRMLS_CC,
+			E_WARNING, GEOIPO_ERROR_NO_DATABASE,
+			GeoIPDBFileName[GEOIP_COUNTRY_EDITION]
+		); RETURN_FALSE;
+	}
+
+	geo = GeoIP_open_type(GEOIP_COUNTRY_EDITION,GEOIP_STANDARD);
+	id = GeoIP_id_by_name(geo,Z_STRVAL_P(host));
+	GeoIP_delete(geo);
+
+	RETURN_LONG(id);
+}
+
 PHP_METHOD(GeoIP, getRecord) {
 
 	GeoIP       *geo;
 	GeoIPRecord *rec;
-	zval        *host;
+	zval        *host = geoipo_get_object_property(getThis(),"host");
 
 	if(!GeoIP_db_avail(GEOIP_CITY_EDITION_REV1) && !GeoIP_db_avail(GEOIP_CITY_EDITION_REV0)) {
 		php_error_docref(
@@ -297,8 +318,6 @@ PHP_METHOD(GeoIP, getRecord) {
 	else
 		geo = GeoIP_open_type(GEOIP_CITY_EDITION_REV0,GEOIP_STANDARD);
 		
-	host = geoipo_get_object_property(getThis(),"host");
-
 	rec = GeoIP_record_by_name(geo,Z_STRVAL_P(host));
 	GeoIP_delete(geo);
 	
