@@ -4,6 +4,10 @@
 // the GeoIP functions, methods, or classes. It is a limitation of libgeoip that
 // once it is set you have to forget.
 
+GeoIP::init('/setting/the');
+GeoIP::init('/custom/directory');
+GeoIP::init('/multiple/times');
+GeoIP::init();
 GeoIP::init('/Users/bob/Temp');
 
 // you do not have to have the databases there to see that the custom directory

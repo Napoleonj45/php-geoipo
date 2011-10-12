@@ -30,6 +30,7 @@ fi
 PHP_SUBST(GEOIPO_SHARED_LIBADD)
 
 AC_CHECK_LIB(geoip, GeoIP_new, [PHP_ADD_LIBRARY(geoip,,GEOIPO_SHARED_LIBADD)], [AC_MSG_ERROR([libgeoip not found])] )
+AC_CHECK_LIB(geoip, GeoIP_cleanup, [PHP_ADD_LIBRARY(geoip,,GEOIPO_SHARED_LIBADD)], [AC_MSG_ERROR([libgeoip >= 1.4.7 failure])] )
 
 PHP_NEW_EXTENSION(
 	[geoipo],

@@ -16,12 +16,16 @@ PHP_MINIT_FUNCTION(geoipo) {
 }
 
 PHP_MSHUTDOWN_FUNCTION(geoipo) {
+
+	GeoIP_cleanup();
+
 	return SUCCESS;
 }
 
 PHP_MINFO_FUNCTION(geoipo) {
 	php_info_print_table_start();
 	php_info_print_table_row(2,"GeoIP OOP","enabled");
+	php_info_print_table_row(2,"libgeoip Version",GeoIP_lib_version());
 	php_info_print_table_end();
 }
 

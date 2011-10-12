@@ -160,10 +160,20 @@ PHP_METHOD(GeoIP, init) {
 	char *dir = NULL;
 	int dir_len = 0;
 
+	if(GEOIPOG(geoipo_has_initd) == 1) {
+	
+		//. as of today (libgeoip 1.4.8) this function appears to be safe to
+		//. use as many times as wanted to flush the database paths and
+		//. regenerate them. If this is true then this method in its current
+		//. state can be renamed to setDatabaseDirectory.
+		GeoIP_cleanup();
+		
+	}
+
  	zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "|s", &dir, &dir_len);
  
  	//. init the custom directory
-	if(dir != NULL) GeoIP_setup_custom_directory(dir);
+	GeoIP_setup_custom_directory(dir);
 	
 	//. init the database files in the library.
 	geoipo_init();
