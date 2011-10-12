@@ -15,6 +15,7 @@ zend_object_value            obj_geoip_new(zend_class_entry * TSRMLS_DC);
 
 // static methods.
 PHP_METHOD(GeoIP, getDatabaseFile);
+PHP_METHOD(GeoIP, getDatabaseInfo);
 PHP_METHOD(GeoIP, hasDatabase);
 PHP_METHOD(GeoIP, init);
 
@@ -28,6 +29,7 @@ PHP_METHOD(GeoIP, getRecord);           //x
 // method catalogue.
 static zend_function_entry   class_geoip_methods[] = {
 	PHP_ME(GeoIP, getDatabaseFile,  NULL, (ZEND_ACC_PUBLIC|ZEND_ACC_ALLOW_STATIC))
+	PHP_ME(GeoIP, getDatabaseInfo,  NULL, (ZEND_ACC_PUBLIC|ZEND_ACC_ALLOW_STATIC))
 	PHP_ME(GeoIP, hasDatabase,      NULL, (ZEND_ACC_PUBLIC|ZEND_ACC_ALLOW_STATIC))
 	PHP_ME(GeoIP, init,             NULL, (ZEND_ACC_PUBLIC|ZEND_ACC_ALLOW_STATIC))
 	PHP_ME(GeoIP, __construct,      NULL, (ZEND_ACC_PUBLIC|ZEND_ACC_CTOR))

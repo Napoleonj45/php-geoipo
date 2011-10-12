@@ -1,6 +1,5 @@
 <?php
 
-GeoIP::init();
 $geo = new GeoIP('squirrelshaterobots.com');
 print_r(array(
 	'host'          => $geo->host,

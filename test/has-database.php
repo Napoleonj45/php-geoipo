@@ -1,6 +1,5 @@
 <?php
 
-GeoIP::init();
 var_dump(array(
 	'country'     => GeoIP::hasDatabase(GeoIP::COUNTRY_EDITION),
 	'countryfile' => GeoIP::getDatabaseFile(GeoIP::COUNTRY_EDITION),

@@ -16,6 +16,7 @@ Completed API:
 
 	Static Methods
 	string  GeoIP::getDatabaseFile(int dbid);
+	string  GeoIP::getDatabaseInfo(int dbid);
 	boolean GeoIP::hasDatabase(int dbid);
 	void    GeoIP::init(optional string directory);
 	

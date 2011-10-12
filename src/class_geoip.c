@@ -90,6 +90,40 @@ PHP_METHOD(GeoIP, getDatabaseFile) {
 	RETURN_STRING(GeoIPDBFileName[dbid],1);
 }
 
+/* string GeoIP::getDatabaseInfo(int GeoIP::CONSTANT);
+ * Return an info string about the selected database. */
+
+PHP_METHOD(GeoIP, getDatabaseInfo) {
+	long   dbid = 0;
+	char  *info;
+	GeoIP *geo;
+	
+	if(zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "l", &dbid) == FAILURE) {
+		RETURN_FALSE;
+	}
+	
+	if(GEOIPOG(geoipo_has_initd) == 0) geoipo_init();
+	
+	if(dbid < 0 || dbid >= NUM_DB_TYPES) {
+		php_error_docref(
+			NULL TSRMLS_CC,
+			E_WARNING, GEOIPO_ERROR_INVALID_DBID,
+			dbid
+		); RETURN_FALSE;
+	}
+	
+	if(!GeoIP_db_avail(dbid)) {
+		RETURN_FALSE;
+	}
+	
+	geo = GeoIP_open_type(dbid,GEOIP_STANDARD);
+	info = GeoIP_database_info(geo); // malloc'd
+	GeoIP_delete(geo);
+
+	RETVAL_STRING(info,1); free(info);
+	return;
+}
+
 /* boolean GeoIP::hasDatabase(int GeoIP::CONSTANT);
  * Returns the boolean value of if a specified database is available on
  * the system. */

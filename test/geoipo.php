@@ -1,7 +1,5 @@
 <?php
 
-GeoIP::init();
-
 $reflect = new ReflectionClass('GeoIP');
 
 echo "Constants", PHP_EOL;
