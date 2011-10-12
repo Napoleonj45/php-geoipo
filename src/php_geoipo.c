@@ -1,9 +1,17 @@
 #include "php_geoipo.h"
 
+ZEND_DECLARE_MODULE_GLOBALS(geoipo)
+
+static void geoipo_init_globals(zend_geoipo_globals *geoipo_globals) {
+	geoipo_globals->geoipo_has_initd = 0;
+	return;
+}
+
+
 PHP_MINIT_FUNCTION(geoipo) {
-
+	ZEND_INIT_MODULE_GLOBALS(geoipo, geoipo_init_globals, NULL);
+	
 	PHP_MINIT(class_geoip)(INIT_FUNC_ARGS_PASSTHRU);
-
 	return SUCCESS;
 }
 
@@ -55,4 +63,11 @@ geoipo_get_object_property(zval *object, const char *property) {
 	MAKE_STD_ZVAL(output);
 	ZVAL_STRING(output,Z_STRVAL_P(value),1);
 	return output;
+}
+
+void
+geoipo_init() {
+	_GeoIP_setup_dbfilename();
+	GEOIPOG(geoipo_has_initd) = 1;
+	return;
 }

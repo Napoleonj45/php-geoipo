@@ -2,7 +2,6 @@
 #include "php_geoipo.h"
 
 zend_class_entry *class_geoip_ce;
-char *custom_directory;
 
 PHP_MINIT_FUNCTION(class_geoip) {
 	zend_class_entry ce;
@@ -78,6 +77,8 @@ PHP_METHOD(GeoIP, getDatabaseFile) {
 		RETURN_FALSE;
 	}
 	
+	if(GEOIPOG(geoipo_has_initd) == 0) geoipo_init();
+	
 	if(dbid < 0 || dbid >= NUM_DB_TYPES) {
 		php_error_docref(
 			NULL TSRMLS_CC,
@@ -99,6 +100,8 @@ PHP_METHOD(GeoIP, hasDatabase) {
 	if(zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "l", &dbid) == FAILURE) {
 		RETURN_FALSE;
 	}
+
+	if(GEOIPOG(geoipo_has_initd) == 0) geoipo_init();
 
 	if(dbid < 0 || dbid >= NUM_DB_TYPES) {
 		php_error_docref(
@@ -126,13 +129,10 @@ PHP_METHOD(GeoIP, init) {
  	zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "|s", &dir, &dir_len);
  
  	//. init the custom directory
-	if(dir != NULL) {
-		printf("setup dir: %s %d\n",dir,dir_len);
-		GeoIP_setup_custom_directory(dir);
-	}
+	if(dir != NULL) GeoIP_setup_custom_directory(dir);
 	
 	//. init the database files in the library.
-	_GeoIP_setup_dbfilename();
+	geoipo_init();
  
  	return;
 }
@@ -148,6 +148,10 @@ PHP_METHOD(GeoIP, __construct) {
 	zval *this = getThis();
 	zval *member;
 	zval *value;
+
+	//. if the paths have not yet been initalized it should be done right
+	//. now before an object tries to read from the databases.
+	if(GEOIPOG(geoipo_has_initd) == 0) geoipo_init();
  	
  	if(zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "|s", &host, &host_len) == FAILURE) {
 		return;

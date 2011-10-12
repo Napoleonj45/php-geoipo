@@ -23,9 +23,21 @@ typedef struct _class_const_list {
 } class_const_list;
 
 zval *geoipo_get_object_property(zval *, const char *);
+void geoipo_init(void);
 
-#define GEOIPO_ERROR_NO_DATABASE "Unable to open database `%s`."
-#define GEOIPO_ERROR_INVALID_DBID "Invalid database selection `%d`."
+ZEND_BEGIN_MODULE_GLOBALS(geoipo)
+int geoipo_has_initd;
+ZEND_END_MODULE_GLOBALS(geoipo)
+ZEND_EXTERN_MODULE_GLOBALS(geoipo)
+
+#ifdef ZTS
+#define GEOIPOG(v) TSRMG(geoipo_globals_id, zend_geoipo_globals *, v)
+#else
+#define GEOIPOG(v) (geoipo_globals.v)
+#endif
+
+#define GEOIPO_ERROR_NO_DATABASE "Unable to open database %s"
+#define GEOIPO_ERROR_INVALID_DBID "Invalid database selection %ld"
 
 #include "config.h"
 #include "src/class_geoip.h"
