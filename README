@@ -37,7 +37,21 @@ Requirements:
 	
 --------
 
-Important Notes:
+Really Important Notes:
+
+	The original php-geoip must not be loaded at the same time as this module.
+	I am not being anti-competitive. The libgeoip from MaxMind only allows you
+	to define the custom directory once, and once it is set you cannot change it
+	and it is locked for the entire duration of the application. If the original
+	php-geoip loads before this module then it will lock you to the system paths
+	by default. Half the reason this module was written was so that you could set
+	the path per application without editing php.ini.
+	
+	So, php-geoip (the original) or php-geoipo (this) pick one not both.
+
+--------
+
+Other Important Notes:
 	
 	I have no Windows machines. There is no Windows build script nor do I
 	know how to write one or how to Windows Windows Windows.
