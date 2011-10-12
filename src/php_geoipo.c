@@ -72,6 +72,19 @@ geoipo_init() {
 	return;
 }
 
+/* void geoipo_return_object_property(zval *object, char *key, void *value, long type)
+ * This is used mostly on return_value from wrapped methods. It will set the specified
+ * object property to the specified value UNLESS the value is NULL. when that is the
+ * case then it will set the object property to boolean false. This eliminates pages
+ * of:
+ * if(!NULL) add_property_string
+ * else add_property_boolean
+ * if(!NULL) add_property_string
+ * else add_property_boolean
+ * if(!NULL) add_property_string
+ * else add_property_boolean
+ */
+
 void
 geoipo_return_object_property(zval *object, char *key, void *value, long type) {
 

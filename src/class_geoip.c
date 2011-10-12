@@ -340,8 +340,6 @@ PHP_METHOD(GeoIP, getRecord) {
 	clon = rec->longitude;
 	clat = rec->latitude;
 	
-	printf("lat: %f\n",(double)rec->latitude);
-
 	//. build the return object.
 	object_init(return_value);
 	geoipo_return_object_property(return_value, "ContinentCode", rec->continent_code, IS_STRING);

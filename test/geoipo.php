@@ -1,7 +1,7 @@
 <?php
 
-//$geo = new GeoIP('microsoft.com');
-$geo = new GeoIP('squirrelshaterobots.com');
+$geo = new GeoIP('microsoft.com');
+//$geo = new GeoIP('squirrelshaterobots.com');
 print_r(array(
 	'geoipo'        => $geo,
 	'countrycode'   => $geo->getCountryCode(),
@@ -10,8 +10,8 @@ print_r(array(
 	'countryname'   => $geo->getCountryName(),
 	'continentcode' => $geo->getContinentCode(),
 	'id'            => $geo->getID(),
-	'record'        => $geo->getRecord()
-//	'region'        => $geo->getRegion()
+	'record'        => $geo->getRecord(),
+	'region'        => $geo->getRegion()
 ));
 
 /*////////////////////////////////////////
