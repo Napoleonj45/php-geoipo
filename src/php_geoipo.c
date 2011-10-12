@@ -71,3 +71,26 @@ geoipo_init() {
 	GEOIPOG(geoipo_has_initd) = 1;
 	return;
 }
+
+void
+geoipo_return_object_property(zval *object, char *key, void *value, long type) {
+
+	switch(type) {
+		case IS_DOUBLE: {
+			if(value != NULL) add_property_double(object,key,*(double*)value);
+			else add_property_bool(object,key,0);
+			break;		
+		}
+		case IS_LONG: {
+			if(value != NULL) add_property_long(object,key,*(long*)value);
+			else add_property_bool(object,key,0);
+			break;		
+		}
+		case IS_STRING: {
+			if(value != NULL) add_property_string(object,key,value,1);
+			else add_property_bool(object,key,0);
+			break;
+		}
+	}
+
+}

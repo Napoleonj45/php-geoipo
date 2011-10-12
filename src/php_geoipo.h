@@ -24,6 +24,7 @@ typedef struct _class_const_list {
 
 zval *geoipo_get_object_property(zval *, const char *);
 void geoipo_init(void);
+void geoipo_return_object_property(zval *, char *, void *, long);
 
 ZEND_BEGIN_MODULE_GLOBALS(geoipo)
 int geoipo_has_initd;

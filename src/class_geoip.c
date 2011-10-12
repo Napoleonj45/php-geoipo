@@ -306,8 +306,10 @@ PHP_METHOD(GeoIP, getRecord) {
 
 	GeoIP       *geo;
 	GeoIPRecord *rec;
-	const char  *regname;
-	const char  *timezone;
+	char  *regname;
+	char  *timezone;
+	double clon;
+	double clat;
 	zval        *host = geoipo_get_object_property(getThis(),"host");
 
 	if(!GeoIP_db_avail(GEOIP_CITY_EDITION_REV1) && !GeoIP_db_avail(GEOIP_CITY_EDITION_REV0)) {
@@ -331,25 +333,29 @@ PHP_METHOD(GeoIP, getRecord) {
 		RETURN_FALSE;
 	}
 	
-	regname = GeoIP_region_name_by_code(rec->country_code,rec->region);
-	timezone = GeoIP_time_zone_by_country_and_region(rec->country_code,rec->region);
+	regname = (char*)GeoIP_region_name_by_code(rec->country_code,rec->region);
+	timezone = (char*)GeoIP_time_zone_by_country_and_region(rec->country_code,rec->region);
+	
+	// float to double.
+	clon = rec->longitude;
+	clat = rec->latitude;
+	
+	printf("lat: %f\n",(double)rec->latitude);
 
 	//. build the return object.
 	object_init(return_value);
-	add_property_string(return_value, "ContinentCode", rec->continent_code, 1);
-	add_property_string(return_value, "CountryCode",   rec->country_code,   1);
-	add_property_string(return_value, "CountryCode3",  rec->country_code3,  1);
-	add_property_string(return_value, "CountryName",   rec->country_name,   1);
-	add_property_string(return_value, "RegionCode",    rec->region,         1);
-	add_property_string(return_value, "RegionName",    (char*)regname,      1);
-	add_property_string(return_value, "City",          rec->city,           1);
-	add_property_string(return_value, "PostalCode",    rec->postal_code,    1);
-	add_property_double(return_value, "Latitude",      rec->latitude         );
-	add_property_double(return_value, "Longitude",     rec->longitude        );
-	add_property_long(  return_value, "MetroCode",     rec->metro_code       );
-	add_property_long(  return_value, "AreaCode",      rec->area_code        );
-	add_property_string(return_value, "TimeZone",      (char*)timezone,     1);
-
+	geoipo_return_object_property(return_value, "ContinentCode", rec->continent_code, IS_STRING);
+	geoipo_return_object_property(return_value, "CountryCode",   rec->country_code,   IS_STRING);
+	geoipo_return_object_property(return_value, "CountryCode3",  rec->country_code3,  IS_STRING);
+	geoipo_return_object_property(return_value, "CountryName",   rec->country_name,   IS_STRING);
+	geoipo_return_object_property(return_value, "RegionCode",    rec->region,         IS_STRING);
+	geoipo_return_object_property(return_value, "RegionName",    regname,             IS_STRING);
+	geoipo_return_object_property(return_value, "City",          rec->city,           IS_STRING);
+	geoipo_return_object_property(return_value, "PostalCode",    rec->postal_code,    IS_STRING);
+	geoipo_return_object_property(return_value, "Latitude",      &clon,               IS_DOUBLE);
+	geoipo_return_object_property(return_value, "Longitude",     &clat,               IS_DOUBLE);
+	geoipo_return_object_property(return_value, "TimeZone",      timezone,            IS_STRING);
+	
 	GeoIPRecord_delete(rec);
 	return;
 }
@@ -365,8 +371,8 @@ PHP_METHOD(GeoIP, getRegion) {
 
 	GeoIP      *geo;
 	long        dbid;
-	const char *regname;
-	const char *timezone;
+	char *regname;
+	char *timezone;
 	zval       *host = geoipo_get_object_property(getThis(),"host");
 
 	//. use the region database if it exists.
@@ -388,15 +394,16 @@ PHP_METHOD(GeoIP, getRegion) {
 			RETURN_FALSE;
 		}
 		
-		regname = GeoIP_region_name_by_code(reg->country_code,reg->region);
-		timezone = GeoIP_time_zone_by_country_and_region(reg->country_code,reg->region);
+		regname = (char*)GeoIP_region_name_by_code(reg->country_code,reg->region);
+		timezone = (char*)GeoIP_time_zone_by_country_and_region(reg->country_code,reg->region);
 		
 		object_init(return_value);
-		add_property_long(  return_value, "DBID",        dbid                );
-		add_property_string(return_value, "CountryCode", reg->country_code, 1);
-		add_property_string(return_value, "RegionCode",  reg->region,       1);
-		add_property_string(return_value, "RegionName",  (char*)regname,    1);
-		add_property_string(return_value, "TimeZone",    (char*)timezone,   1);
+		geoipo_return_object_property(return_value, "DBID",        &dbid,             IS_LONG );
+		geoipo_return_object_property(return_value, "CountryCode", reg->country_code, IS_STRING);
+		geoipo_return_object_property(return_value, "RegionCode",  reg->region,       IS_STRING);
+		geoipo_return_object_property(return_value, "RegionName",  regname,           IS_STRING);
+		geoipo_return_object_property(return_value, "TimeZone",    timezone,          IS_STRING);
+
 		GeoIPRegion_delete(reg);
 		return;		
 	}
@@ -420,15 +427,16 @@ PHP_METHOD(GeoIP, getRegion) {
 			RETURN_FALSE;
 		}
 		
-		regname = GeoIP_region_name_by_code(rec->country_code,rec->region);
-		timezone = GeoIP_time_zone_by_country_and_region(rec->country_code,rec->region);
+		regname = (char*)GeoIP_region_name_by_code(rec->country_code,rec->region);
+		timezone = (char*)GeoIP_time_zone_by_country_and_region(rec->country_code,rec->region);
 
 		object_init(return_value);
-		add_property_long(  return_value, "DBID",        dbid                );
-		add_property_string(return_value, "CountryCode", rec->country_code, 1);
-		add_property_string(return_value, "RegionCode",  rec->region,       1);
-		add_property_string(return_value, "RegionName",  (char*)regname,    1);
-		add_property_string(return_value, "TimeZone",    (char*)timezone,   1);		
+		geoipo_return_object_property(return_value, "DBID",        &dbid,             IS_LONG );
+		geoipo_return_object_property(return_value, "CountryCode", rec->country_code, IS_STRING);
+		geoipo_return_object_property(return_value, "RegionCode",  rec->region,       IS_STRING);
+		geoipo_return_object_property(return_value, "RegionName",  regname,           IS_STRING);
+		geoipo_return_object_property(return_value, "TimeZone",    timezone,          IS_STRING);	
+			
 		GeoIPRecord_delete(rec);
 		return;
 	}
