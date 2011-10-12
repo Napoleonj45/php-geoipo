@@ -279,5 +279,47 @@ PHP_METHOD(GeoIP, getCountryName) {
 
 PHP_METHOD(GeoIP, getRecord) {
 
+	GeoIP       *geo;
+	GeoIPRecord *rec;
+	zval        *host;
+
+	if(!GeoIP_db_avail(GEOIP_CITY_EDITION_REV1) && !GeoIP_db_avail(GEOIP_CITY_EDITION_REV0)) {
+		php_error_docref(
+			NULL TSRMLS_CC,
+			E_WARNING, GEOIPO_ERROR_NO_DATABASE,
+			GeoIPDBFileName[GEOIP_CITY_EDITION_REV1]
+		); RETURN_FALSE;
+	}
+
+	
+	if(GeoIP_db_avail(GEOIP_CITY_EDITION_REV1))
+		geo = GeoIP_open_type(GEOIP_CITY_EDITION_REV1,GEOIP_STANDARD);
+	else
+		geo = GeoIP_open_type(GEOIP_CITY_EDITION_REV0,GEOIP_STANDARD);
+		
+	host = geoipo_get_object_property(getThis(),"host");
+
+	rec = GeoIP_record_by_name(geo,Z_STRVAL_P(host));
+	GeoIP_delete(geo);
+	
+	if(rec == NULL) {
+		RETURN_FALSE;
+	}
+
+	//. build the return object.
+	object_init(return_value);
+	add_property_string(return_value, "ContinentCode", rec->continent_code, 1);
+	add_property_string(return_value, "CountryCode",   rec->country_code,   1);
+	add_property_string(return_value, "CountryCode3",  rec->country_code3,  1);
+	add_property_string(return_value, "CountryName",   rec->country_name,   1);
+	add_property_string(return_value, "Region",        rec->region,         1);
+	add_property_string(return_value, "City",          rec->city,           1);
+	add_property_string(return_value, "PostalCode",    rec->postal_code,    1);
+	add_property_double(return_value, "Latitude",      rec->latitude         );
+	add_property_double(return_value, "Longitude",     rec->longitude        );
+	add_property_long(  return_value, "MetroCode",     rec->metro_code       );
+	add_property_long(  return_value, "AreaCode",      rec->area_code        );
+
+	GeoIPRecord_delete(rec);
 	return;
 }

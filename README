@@ -28,6 +28,7 @@ Completed API:
 	string  GeoIP->getContinentCode(void);
 	string  GeoIP->getCountryCode(optional int len);
 	string  GeoIP->getCountryName(void);
+	object  GeoIP->getRecord(void);
 
 --------
 
