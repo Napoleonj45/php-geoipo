@@ -1,5 +1,11 @@
 <?php
 
+//. geoipo will cache the results from the database lookup so if you
+//. call the record and region methods multiple times for the same 
+//. host it will not waste time scanning the database for it again.
+//. this will maximize performance in situations where code is written
+//. like this, where properties are chained off.
+
 $geo = new GeoIP('squirrelshaterobots.com');
 print_r(array(
 	$geo->getRecord()->CountryCode,
@@ -8,22 +14,12 @@ print_r(array(
 	$geo->getRecord()->RegionName
 ));
 
-print_r(array(
-	$geo->getRegion()->CountryCode,
-	$geo->getRegion()->RegionCode
-));
-
 $geo->host = 'opsat.net';
 print_r(array(
 	$geo->getRecord()->CountryCode,
 	$geo->getRecord()->CountryName,
 	$geo->getRecord()->RegionCode,
 	$geo->getRecord()->RegionName
-));
-
-print_r(array(
-	$geo->getRegion()->CountryCode,
-	$geo->getRegion()->RegionCode
 ));
 
 /*////////////////////////////////////////

@@ -105,21 +105,20 @@ geoipo_zval_set_or_false(zval *z, void *value, long type) {
 zvals in it. returns the pointer to the allocated structure. */
 void
 geoipo_record_cache_init(geoipo_record_cache **input) {
-	geoipo_record_cache *cache = ecalloc(sizeof(geoipo_record_cache),1);
+	*input = ecalloc(sizeof(geoipo_record_cache),1);
 
-	MAKE_STD_ZVAL(cache->ContinentCode);
-	MAKE_STD_ZVAL(cache->CountryCode);
-	MAKE_STD_ZVAL(cache->CountryCode3);
-	MAKE_STD_ZVAL(cache->CountryName);
-	MAKE_STD_ZVAL(cache->RegionCode);
-	MAKE_STD_ZVAL(cache->RegionName);
-	MAKE_STD_ZVAL(cache->City);
-	MAKE_STD_ZVAL(cache->PostalCode);
-	MAKE_STD_ZVAL(cache->Latitude);
-	MAKE_STD_ZVAL(cache->Longitude);
-	MAKE_STD_ZVAL(cache->TimeZone);
-	
-	*input = cache;
+	MAKE_STD_ZVAL((*input)->ContinentCode);
+	MAKE_STD_ZVAL((*input)->CountryCode);
+	MAKE_STD_ZVAL((*input)->CountryCode3);
+	MAKE_STD_ZVAL((*input)->CountryName);
+	MAKE_STD_ZVAL((*input)->RegionCode);
+	MAKE_STD_ZVAL((*input)->RegionName);
+	MAKE_STD_ZVAL((*input)->City);
+	MAKE_STD_ZVAL((*input)->PostalCode);
+	MAKE_STD_ZVAL((*input)->Latitude);
+	MAKE_STD_ZVAL((*input)->Longitude);
+	MAKE_STD_ZVAL((*input)->TimeZone);
+
 	return;
 }
 
@@ -128,22 +127,21 @@ and then free the ram that was assigned to the structure */
 
 void
 geoipo_record_cache_destroy(geoipo_record_cache **input) {
-	geoipo_record_cache *cache = *input;
 
-	zval_dtor(cache->ContinentCode);
-	zval_dtor(cache->CountryCode);
-	zval_dtor(cache->CountryCode3);
-	zval_dtor(cache->CountryName);
-	zval_dtor(cache->RegionCode);
-	zval_dtor(cache->RegionName);
-	zval_dtor(cache->City);
-	zval_dtor(cache->PostalCode);
-	zval_dtor(cache->Latitude);
-	zval_dtor(cache->Longitude);
-	zval_dtor(cache->TimeZone);
+	zval_dtor((*input)->ContinentCode);
+	zval_dtor((*input)->CountryCode);
+	zval_dtor((*input)->CountryCode3);
+	zval_dtor((*input)->CountryName);
+	zval_dtor((*input)->RegionCode);
+	zval_dtor((*input)->RegionName);
+	zval_dtor((*input)->City);
+	zval_dtor((*input)->PostalCode);
+	zval_dtor((*input)->Latitude);
+	zval_dtor((*input)->Longitude);
+	zval_dtor((*input)->TimeZone);
 	
-	efree(cache);
-	cache = NULL;
+	efree(*input);
+	*input = NULL;
 
 	return;
 }
@@ -153,28 +151,26 @@ geoipo_record_cache_destroy(geoipo_record_cache **input) {
 
 void
 geoipo_region_cache_init(geoipo_region_cache **input) {
-	geoipo_region_cache *cache = ecalloc(sizeof(geoipo_region_cache),1);
+	*input = ecalloc(sizeof(geoipo_region_cache),1);
 
-	MAKE_STD_ZVAL(cache->CountryCode);
-	MAKE_STD_ZVAL(cache->RegionCode);
-	MAKE_STD_ZVAL(cache->RegionName);
-	MAKE_STD_ZVAL(cache->TimeZone);
-	
-	*input = cache;
+	MAKE_STD_ZVAL((*input)->CountryCode);
+	MAKE_STD_ZVAL((*input)->RegionCode);
+	MAKE_STD_ZVAL((*input)->RegionName);
+	MAKE_STD_ZVAL((*input)->TimeZone);
+
 	return;
 }
 
 void
 geoipo_region_cache_destroy(geoipo_region_cache **input) {
-	geoipo_region_cache *cache = *input;
 
-	zval_dtor(cache->CountryCode);
-	zval_dtor(cache->RegionCode);
-	zval_dtor(cache->RegionName);
-	zval_dtor(cache->TimeZone);
+	zval_dtor((*input)->CountryCode);
+	zval_dtor((*input)->RegionCode);
+	zval_dtor((*input)->RegionName);
+	zval_dtor((*input)->TimeZone);
 	
-	efree(cache);
-	cache = NULL;
+	efree((*input));
+	(*input) = NULL;
 
 	return;
 }
