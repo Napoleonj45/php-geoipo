@@ -251,7 +251,7 @@ PHP_METHOD(GeoIP, listDatabases) {
 	int a = 0;
 	zval *obj;
 	
-	geoipo_init(TSRMLS_C);	
+	if(GEOIPOG(geoipo_has_initd) == 0) geoipo_init(TSRMLS_C);	
 	
 	array_init(return_value);
 	for(a = 0; a < NUM_DB_TYPES; a++) {
