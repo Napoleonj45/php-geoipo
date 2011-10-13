@@ -1,8 +1,8 @@
 
 typedef struct _obj_geoip_s {
-	zend_object  std;
-	GeoIPRecord *recordcache;
-	GeoIPRegion *regioncache;
+	zend_object          std;
+	geoipo_record_cache *recordcache;
+	geoipo_region_cache *regioncache;
 } obj_geoip_s;
 
 //////////////////////////////////////////

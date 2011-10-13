@@ -87,12 +87,12 @@ obj_geoip_write_property(zval *object, zval *member, zval *value TSRMLS_DC) {
 		//php_printf("dumping cache due to host change\n");
 		
 		if(this->recordcache != NULL) {
-			GeoIPRecord_delete(this->recordcache);
+			geoipo_record_cache_destroy(&this->recordcache);
 			this->recordcache = NULL;
 		}
 	
 		if(this->regioncache != NULL) {
-			GeoIPRegion_delete(this->regioncache);
+			geoipo_region_cache_destroy(&this->regioncache);
 			this->regioncache = NULL;
 		}
 	}
@@ -112,10 +112,10 @@ obj_geoip_free(void *obj TSRMLS_DC) {
 	obj_geoip_s *object = (obj_geoip_s *)obj;
 
 	if(object->recordcache != NULL)
-	GeoIPRecord_delete(object->recordcache);
+	geoipo_record_cache_destroy(&object->recordcache);
 
 	if(object->regioncache != NULL)
-	GeoIPRegion_delete(object->regioncache);
+	geoipo_region_cache_destroy(&object->regioncache);
 
 	efree(obj);
 	object = NULL;
@@ -402,15 +402,9 @@ information at once, this is your best method to use. */
  */
 
 PHP_METHOD(GeoIP, getRecord) {
-
-	GeoIP       *geo;
-	GeoIPRecord *rec;
-	char        *regname;
-	char        *timezone;
-	double       clon;
-	double       clat;
-	zval        *host = geoipo_get_object_property(getThis(),"host" TSRMLS_CC);
-	obj_geoip_s *this = (obj_geoip_s *)zend_objects_get_address(getThis() TSRMLS_CC);
+	zval                *host = geoipo_get_object_property(getThis(),"host" TSRMLS_CC);
+	obj_geoip_s         *this = (obj_geoip_s *)zend_objects_get_address(getThis() TSRMLS_CC);
+	geoipo_record_cache *cache = NULL;
 
 	if(!GeoIP_db_avail(GEOIP_CITY_EDITION_REV1) && !GeoIP_db_avail(GEOIP_CITY_EDITION_REV0)) {
 		php_error_docref(
@@ -421,51 +415,35 @@ PHP_METHOD(GeoIP, getRecord) {
 	}
 
 	if(this->recordcache == NULL) {
-		//php_printf("record lookup %s\n",Z_STRVAL_P(host));
-		if(GeoIP_db_avail(GEOIP_CITY_EDITION_REV1))
-			geo = GeoIP_open_type(GEOIP_CITY_EDITION_REV1,GEOIP_STANDARD);
-		else
-			geo = GeoIP_open_type(GEOIP_CITY_EDITION_REV0,GEOIP_STANDARD);
-		
-		rec = GeoIP_record_by_name(geo,Z_STRVAL_P(host));
-		GeoIP_delete(geo);
+		//php_printf("record seek %s\n",Z_STRVAL_P(host));
+		cache = geoipo_record_get(Z_STRVAL_P(host));
+		if(cache == NULL) {
+			RETURN_FALSE;
+		} else {
+			this->recordcache = cache;
+		}
 	} else {
 		//php_printf("record reuse %s\n",Z_STRVAL_P(host));
-		rec = this->recordcache;
+		cache = this->recordcache;
 	}
 	
-	if(rec == NULL) {
+	if(cache == NULL) {
 		RETURN_FALSE;
 	}
 	
-	regname = (char*)GeoIP_region_name_by_code(rec->country_code,rec->region);
-	timezone = (char*)GeoIP_time_zone_by_country_and_region(rec->country_code,rec->region);
-	
-	// float to double.
-	clon = rec->longitude;
-	clat = rec->latitude;
-	
 	//. build the return object.
 	object_init(return_value);
-	geoipo_return_object_property(return_value, "ContinentCode", rec->continent_code, IS_STRING TSRMLS_CC);
-	geoipo_return_object_property(return_value, "CountryCode",   rec->country_code,   IS_STRING TSRMLS_CC);
-	geoipo_return_object_property(return_value, "CountryCode3",  rec->country_code3,  IS_STRING TSRMLS_CC);
-	geoipo_return_object_property(return_value, "CountryName",   rec->country_name,   IS_STRING TSRMLS_CC);
-	geoipo_return_object_property(return_value, "RegionCode",    rec->region,         IS_STRING TSRMLS_CC);
-	geoipo_return_object_property(return_value, "RegionName",    regname,             IS_STRING TSRMLS_CC);
-	geoipo_return_object_property(return_value, "City",          rec->city,           IS_STRING TSRMLS_CC);
-	geoipo_return_object_property(return_value, "PostalCode",    rec->postal_code,    IS_STRING TSRMLS_CC);
-	geoipo_return_object_property(return_value, "Latitude",      &clon,               IS_DOUBLE TSRMLS_CC);
-	geoipo_return_object_property(return_value, "Longitude",     &clat,               IS_DOUBLE TSRMLS_CC);
-	geoipo_return_object_property(return_value, "TimeZone",      timezone,            IS_STRING TSRMLS_CC);
-	
-	// GeoIPRecord_delete(rec);
-	// keep around the record object instead, this way if an app does something like:
-	// $geo->getRecord()->CountryName; $geo->getRecord()->RegionName;
-	// it is not actually looking up the library/database twice. we will then invalidate
-	// the cache when the host property is changed.
-	if(this->recordcache == NULL) this->recordcache = rec;
-
+	add_property_zval(return_value, "ContinentCode", cache->ContinentCode);
+	add_property_zval(return_value, "CountryCode",   cache->CountryCode);
+	add_property_zval(return_value, "CountryCode3",  cache->CountryCode3);
+	add_property_zval(return_value, "CountryName",   cache->CountryName);
+	add_property_zval(return_value, "RegionCode",    cache->RegionCode);
+	add_property_zval(return_value, "RegionName",    cache->RegionName);
+	add_property_zval(return_value, "City",          cache->City);
+	add_property_zval(return_value, "PostalCode",    cache->PostalCode);
+	add_property_zval(return_value, "Latitude",      cache->Latitude);
+	add_property_zval(return_value, "Longitude",     cache->Longitude);
+	add_property_zval(return_value, "TimeZone",      cache->TimeZone);
 	return;
 }
 
@@ -478,7 +456,6 @@ database which contains the same information. if you only need basic
 country info about a host, this is your best method to use. */
 
 /* returned object properties:
- * int DBID
  * string CountryCode
  * string RegionCode
  * string RegionName
@@ -486,93 +463,62 @@ country info about a host, this is your best method to use. */
  */
 
 PHP_METHOD(GeoIP, getRegion) {
-
-	GeoIP       *geo;
-	long         dbid;
-	char        *regname;
-	char        *timezone;
-	zval        *host = geoipo_get_object_property(getThis(),"host" TSRMLS_CC);
-	obj_geoip_s *this = (obj_geoip_s *)zend_objects_get_address(getThis() TSRMLS_CC);
+	zval                *host = geoipo_get_object_property(getThis(),"host" TSRMLS_CC);
+	obj_geoip_s         *this = (obj_geoip_s *)zend_objects_get_address(getThis() TSRMLS_CC);
 
 	//. use the region database if it exists.
 	if(GeoIP_db_avail(GEOIP_REGION_EDITION_REV1) || GeoIP_db_avail(GEOIP_REGION_EDITION_REV0)) {
-		GeoIPRegion *reg;
-
+		geoipo_region_cache *cache;
+	
 		if(this->regioncache == NULL) {
-			//php_printf("region lookup %s\n",Z_STRVAL_P(host));
-			if(GeoIP_db_avail(GEOIP_REGION_EDITION_REV1)) {
-				geo = GeoIP_open_type(GEOIP_REGION_EDITION_REV1,GEOIP_STANDARD);
-				dbid = GEOIP_REGION_EDITION_REV1;
+			cache = geoipo_region_get(Z_STRVAL_P(host));
+			if(cache == NULL) {
+				RETURN_FALSE;
 			} else {
-				geo = GeoIP_open_type(GEOIP_REGION_EDITION_REV0,GEOIP_STANDARD);
-				dbid = GEOIP_REGION_EDITION_REV0;
+				this->regioncache = cache;
 			}
-				
-			reg = GeoIP_region_by_name(geo,Z_STRVAL_P(host));
-			GeoIP_delete(geo);
 		} else {
-			//php_printf("region reuse %s\n",Z_STRVAL_P(host));
-			reg = this->regioncache;
+			cache = this->regioncache;
 		}
 
-		if(reg == NULL) {
+		if(cache == NULL) {
 			RETURN_FALSE;
 		}
 		
-		regname = (char*)GeoIP_region_name_by_code(reg->country_code,reg->region);
-		timezone = (char*)GeoIP_time_zone_by_country_and_region(reg->country_code,reg->region);
-		
 		object_init(return_value);
-		geoipo_return_object_property(return_value, "DBID",        &dbid,             IS_LONG   TSRMLS_CC);
-		geoipo_return_object_property(return_value, "CountryCode", reg->country_code, IS_STRING TSRMLS_CC);
-		geoipo_return_object_property(return_value, "RegionCode",  reg->region,       IS_STRING TSRMLS_CC);
-		geoipo_return_object_property(return_value, "RegionName",  regname,           IS_STRING TSRMLS_CC);
-		geoipo_return_object_property(return_value, "TimeZone",    timezone,          IS_STRING TSRMLS_CC);
-
-		//GeoIPRegion_delete(reg);
-		if(this->regioncache == NULL) this->regioncache = reg;
-		
+		add_property_zval(return_value, "CountryCode", cache->CountryCode);
+		add_property_zval(return_value, "RegionCode",  cache->RegionCode);
+		add_property_zval(return_value, "RegionName",  cache->RegionName);
+		add_property_zval(return_value, "TimeZone",    cache->TimeZone);
 		return;		
 	}
 	
 	//. else use the city database.
 	else if(GeoIP_db_avail(GEOIP_CITY_EDITION_REV1) || GeoIP_db_avail(GEOIP_CITY_EDITION_REV0)) {
-		GeoIPRecord *rec;
-
+		geoipo_record_cache *cache;
+		
 		if(this->recordcache == NULL) {
-			//php_printf("record lookup %s\n",Z_STRVAL_P(host));
-			if(GeoIP_db_avail(GEOIP_CITY_EDITION_REV1)) {
-				geo = GeoIP_open_type(GEOIP_CITY_EDITION_REV1,GEOIP_STANDARD);
-				dbid = GEOIP_CITY_EDITION_REV1;
+			//php_printf("record seek %s\n",Z_STRVAL_P(host));
+			cache = geoipo_record_get(Z_STRVAL_P(host));
+			if(cache == NULL) {
+				RETURN_FALSE;
 			} else {
-				geo = GeoIP_open_type(GEOIP_CITY_EDITION_REV0,GEOIP_STANDARD);
-				dbid = GEOIP_CITY_EDITION_REV0;
+				this->recordcache = cache;
 			}
-	
-			rec = GeoIP_record_by_name(geo,Z_STRVAL_P(host));
-			GeoIP_delete(geo);
 		} else {
 			//php_printf("record reuse %s\n",Z_STRVAL_P(host));
-			rec = this->recordcache;
+			cache = this->recordcache;
 		}
-		
-		if(rec == NULL) {
+
+		if(cache == NULL) {
 			RETURN_FALSE;
 		}
-		
-		regname = (char*)GeoIP_region_name_by_code(rec->country_code,rec->region);
-		timezone = (char*)GeoIP_time_zone_by_country_and_region(rec->country_code,rec->region);
 
 		object_init(return_value);
-		geoipo_return_object_property(return_value, "DBID",        &dbid,             IS_LONG   TSRMLS_CC);
-		geoipo_return_object_property(return_value, "CountryCode", rec->country_code, IS_STRING TSRMLS_CC);
-		geoipo_return_object_property(return_value, "RegionCode",  rec->region,       IS_STRING TSRMLS_CC);
-		geoipo_return_object_property(return_value, "RegionName",  regname,           IS_STRING TSRMLS_CC);
-		geoipo_return_object_property(return_value, "TimeZone",    timezone,          IS_STRING TSRMLS_CC);	
-			
-		//GeoIPRecord_delete(rec);
-		if(this->recordcache == NULL) this->recordcache = rec;
-		
+		add_property_zval(return_value, "CountryCode", cache->CountryCode);
+		add_property_zval(return_value, "RegionCode",  cache->RegionCode);
+		add_property_zval(return_value, "RegionName",  cache->RegionName);
+		add_property_zval(return_value, "TimeZone",    cache->TimeZone);
 		return;
 	}
 	

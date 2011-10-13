@@ -76,38 +76,194 @@ geoipo_init(TSRMLS_D) {
 	return;
 }
 
-/* void geoipo_return_object_property(zval *object, char *key, void *value, long type)
- * This is used mostly on return_value from wrapped methods. It will set the specified
- * object property to the specified value UNLESS the value is NULL. when that is the
- * case then it will set the object property to boolean false. This eliminates pages
- * of:
- * if(!NULL) add_property_string
- * else add_property_boolean
- * if(!NULL) add_property_string
- * else add_property_boolean
- * if(!NULL) add_property_string
- * else add_property_boolean
- */
+/* given a zval, a value, and the type you are aiming for attempt
+to set the zval to that value with that type. however if the value
+was NULL then instead set the zval to boolean false. */
 
 void
-geoipo_return_object_property(zval *object, char *key, void *value, long type TSRMLS_DC) {
-	
+geoipo_zval_set_or_false(zval *z, void *value, long type) {
 	switch(type) {
 		case IS_DOUBLE: {
-			if(value != NULL) add_property_double(object,key,*(double*)value);
-			else add_property_bool(object,key,0);
-			break;		
-		}
-		case IS_LONG: {
-			if(value != NULL) add_property_long(object,key,*(long*)value);
-			else add_property_bool(object,key,0);
-			break;		
+			if(value == NULL) { ZVAL_BOOL(z,0); } 
+			else { ZVAL_DOUBLE(z,*(double*)value); }
+			break;
 		}
 		case IS_STRING: {
-			if(value != NULL) add_property_string(object,key,value,1);
-			else add_property_bool(object,key,0);
+			if(value == NULL) { ZVAL_BOOL(z,0); } 
+			else { ZVAL_STRING(z,(char*)value,1); }
 			break;
 		}
 	}
-
+	
+	return;
 }
+
+//////////////////////////////////////////
+// geoip record cache ////////////////////
+
+/* allocate space in memory for my cache object and initate all the
+zvals in it. returns the pointer to the allocated structure. */
+void
+geoipo_record_cache_init(geoipo_record_cache **input) {
+	geoipo_record_cache *cache = ecalloc(sizeof(geoipo_record_cache),1);
+
+	MAKE_STD_ZVAL(cache->ContinentCode);
+	MAKE_STD_ZVAL(cache->CountryCode);
+	MAKE_STD_ZVAL(cache->CountryCode3);
+	MAKE_STD_ZVAL(cache->CountryName);
+	MAKE_STD_ZVAL(cache->RegionCode);
+	MAKE_STD_ZVAL(cache->RegionName);
+	MAKE_STD_ZVAL(cache->City);
+	MAKE_STD_ZVAL(cache->PostalCode);
+	MAKE_STD_ZVAL(cache->Latitude);
+	MAKE_STD_ZVAL(cache->Longitude);
+	MAKE_STD_ZVAL(cache->TimeZone);
+	
+	*input = cache;
+	return;
+}
+
+/* destroy an allocated cache structure. destroy all the zvals in it
+and then free the ram that was assigned to the structure */
+
+void
+geoipo_record_cache_destroy(geoipo_record_cache **input) {
+	geoipo_record_cache *cache = *input;
+
+	zval_dtor(cache->ContinentCode);
+	zval_dtor(cache->CountryCode);
+	zval_dtor(cache->CountryCode3);
+	zval_dtor(cache->CountryName);
+	zval_dtor(cache->RegionCode);
+	zval_dtor(cache->RegionName);
+	zval_dtor(cache->City);
+	zval_dtor(cache->PostalCode);
+	zval_dtor(cache->Latitude);
+	zval_dtor(cache->Longitude);
+	zval_dtor(cache->TimeZone);
+	
+	efree(cache);
+	cache = NULL;
+
+	return;
+}
+
+//////////////////////////////////////////
+// geoip region cache ////////////////////
+
+void
+geoipo_region_cache_init(geoipo_region_cache **input) {
+	geoipo_region_cache *cache = ecalloc(sizeof(geoipo_region_cache),1);
+
+	MAKE_STD_ZVAL(cache->CountryCode);
+	MAKE_STD_ZVAL(cache->RegionCode);
+	MAKE_STD_ZVAL(cache->RegionName);
+	MAKE_STD_ZVAL(cache->TimeZone);
+	
+	*input = cache;
+	return;
+}
+
+void
+geoipo_region_cache_destroy(geoipo_region_cache **input) {
+	geoipo_region_cache *cache = *input;
+
+	zval_dtor(cache->CountryCode);
+	zval_dtor(cache->RegionCode);
+	zval_dtor(cache->RegionName);
+	zval_dtor(cache->TimeZone);
+	
+	efree(cache);
+	cache = NULL;
+
+	return;
+}
+
+//////////////////////////////////////////
+// geoip record get //////////////////////
+
+geoipo_record_cache *
+geoipo_record_get(char *host) {
+	GeoIP               *geo;
+	GeoIPRecord         *record;
+	geoipo_record_cache *out;
+	const char *regionname;
+	const char *timezone;
+	double dlong,dlat;
+
+	// try to get the proper database open.
+	if(GeoIP_db_avail(GEOIP_CITY_EDITION_REV1))
+	geo = GeoIP_open_type(GEOIP_CITY_EDITION_REV1,GEOIP_STANDARD);
+	else if(GeoIP_db_avail(GEOIP_CITY_EDITION_REV1))
+	geo = GeoIP_open_type(GEOIP_CITY_EDITION_REV0,GEOIP_STANDARD);
+	else return NULL;
+	
+	// read out the record.
+	record = GeoIP_record_by_name(geo,host);
+	GeoIP_delete(geo);
+	
+	// no record quit, else allocate the space for it.
+	if(record == NULL) return NULL;
+	else geoipo_record_cache_init(&out);
+
+	// i want to extend the record info a little.
+	regionname = GeoIP_region_name_by_code(record->country_code,record->region);
+	timezone = GeoIP_time_zone_by_country_and_region(record->country_code,record->region);
+	dlat = (double)record->latitude;
+	dlong = (double)record->longitude;
+
+	// plop in the data struct.
+	geoipo_zval_set_or_false(out->ContinentCode, record->continent_code, IS_STRING);
+	geoipo_zval_set_or_false(out->CountryCode,   record->country_code,   IS_STRING);
+	geoipo_zval_set_or_false(out->CountryCode3,  record->country_code3,  IS_STRING);
+	geoipo_zval_set_or_false(out->CountryName,   record->country_name,   IS_STRING);
+	geoipo_zval_set_or_false(out->RegionCode,    record->region,         IS_STRING);
+	geoipo_zval_set_or_false(out->RegionName,    (char*)regionname,      IS_STRING);
+	geoipo_zval_set_or_false(out->City,          record->city,           IS_STRING);
+	geoipo_zval_set_or_false(out->PostalCode,    record->postal_code,    IS_STRING);
+	geoipo_zval_set_or_false(out->Latitude,      &dlat,                  IS_DOUBLE);
+	geoipo_zval_set_or_false(out->Longitude,     &dlong,                 IS_DOUBLE);
+	geoipo_zval_set_or_false(out->TimeZone,      (char*)timezone,        IS_STRING);
+	
+	GeoIPRecord_delete(record);
+	return out;
+}
+
+geoipo_region_cache *
+geoipo_region_get(char *host) {
+	GeoIP               *geo;
+	GeoIPRegion         *region;
+	geoipo_region_cache *out;
+	const char          *regionname;
+	const char          *timezone;
+	
+	// open the database
+	if(GeoIP_db_avail(GEOIP_REGION_EDITION_REV1))
+	geo = GeoIP_open_type(GEOIP_REGION_EDITION_REV1,GEOIP_STANDARD);
+	else if(GeoIP_db_avail(GEOIP_REGION_EDITION_REV0))
+	geo = GeoIP_open_type(GEOIP_REGION_EDITION_REV0,GEOIP_STANDARD);
+	else return NULL;
+	
+	// read out the region
+	region = GeoIP_region_by_name(geo,host);
+	GeoIP_delete(geo);
+
+	// no region quit, else allocate space.
+	if(region == NULL) return NULL;
+	else geoipo_region_cache_init(&out);
+
+	regionname = GeoIP_region_name_by_code(region->country_code,region->region);
+	timezone = GeoIP_time_zone_by_country_and_region(region->country_code,region->region);
+
+	// plop in the data struct.
+	geoipo_zval_set_or_false(out->CountryCode,   region->country_code,   IS_STRING);
+	geoipo_zval_set_or_false(out->RegionCode,    region->region,         IS_STRING);
+	geoipo_zval_set_or_false(out->RegionName,    (char*)regionname,      IS_STRING);
+	geoipo_zval_set_or_false(out->TimeZone,      (char*)timezone,        IS_STRING);
+	
+	GeoIPRegion_delete(region);
+	return out;
+}
+
+//////////////////////////////////////////
+//////////////////////////////////////////
