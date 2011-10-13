@@ -3,6 +3,7 @@
 
 zend_class_entry *class_geoip_ce;
 
+#pragma mark PHP_MINIT_FUNCTION
 PHP_MINIT_FUNCTION(class_geoip) {
 	zend_class_entry ce;
 
@@ -12,6 +13,7 @@ PHP_MINIT_FUNCTION(class_geoip) {
 	class_geoip_ce->create_object = obj_geoip_new;
 	zend_declare_property_null(class_geoip_ce,"host",(sizeof("host")-1),ZEND_ACC_PUBLIC TSRMLS_CC);
 	memcpy(&obj_geoip_handlers,zend_get_std_object_handlers(),sizeof(zend_object_handlers));
+	obj_geoip_handlers.write_property = obj_geoip_write_property;
 
 	//. register GeoIP constants
 	int a;
@@ -39,6 +41,8 @@ obj_geoip_new(zend_class_entry *ce TSRMLS_DC)
 	//. allocate object space.
 	object = ecalloc(1,sizeof(obj_geoip_s));
 	object->std.ce = ce;
+	object->recordcache = NULL;
+	object->regioncache = NULL;
 	
 	ALLOC_HASHTABLE(object->std.properties);
 	zend_hash_init(
@@ -59,7 +63,7 @@ obj_geoip_new(zend_class_entry *ce TSRMLS_DC)
 	output.handle = zend_objects_store_put(
 		object,
 		NULL,
-		NULL,
+		(zend_objects_free_object_storage_t)obj_geoip_free,
 		NULL TSRMLS_CC
 	);
 	
@@ -67,9 +71,55 @@ obj_geoip_new(zend_class_entry *ce TSRMLS_DC)
 	return output;
 }
 
+void
+obj_geoip_write_property(zval *object, zval *member, zval *value TSRMLS_DC) {
+	obj_geoip_s *this = (obj_geoip_s *)zend_objects_get_address(object TSRMLS_CC);
+
+	//. if the host property of this object is changed then all caches should 
+	//. be invalidated.
+	if(!strncmp(Z_STRVAL_P(member),"host",4)) {
+		//php_printf("dumping cache due to host change\n");
+		
+		if(this->recordcache != NULL) {
+			GeoIPRecord_delete(this->recordcache);
+			this->recordcache = NULL;
+		}
+	
+		if(this->regioncache != NULL) {
+			GeoIPRegion_delete(this->regioncache);
+			this->regioncache = NULL;
+		}
+	}
+
+	//. and the default write behaviour should continue.
+	zend_get_std_object_handlers()->write_property(
+		object,
+		member,
+		value TSRMLS_CC
+	);
+	
+	return;
+}
+
+void
+obj_geoip_free(void *obj TSRMLS_DC) {
+	obj_geoip_s *object = (obj_geoip_s *)obj;
+
+	if(object->recordcache != NULL)
+	GeoIPRecord_delete(object->recordcache);
+
+	if(object->regioncache != NULL)
+	GeoIPRegion_delete(object->regioncache);
+
+	efree(obj);
+	object = NULL;
+	return;
+}
+
+#pragma mark GeoIP::getDatabaseFilename
 /* string GeoIP::getDatabaseFilename(int GeoIP::CONSTANT);
  * Return the path to the filename of the selected database. */
- 
+
 PHP_METHOD(GeoIP, getDatabaseFile) {
 	long dbid = 0;
 	
@@ -90,6 +140,7 @@ PHP_METHOD(GeoIP, getDatabaseFile) {
 	RETURN_STRING(GeoIPDBFileName[dbid],1);
 }
 
+#pragma mark GeoIP::getDatabaseInfo
 /* string GeoIP::getDatabaseInfo(int GeoIP::CONSTANT);
  * Return an info string about the selected database. */
 
@@ -124,6 +175,7 @@ PHP_METHOD(GeoIP, getDatabaseInfo) {
 	return;
 }
 
+#pragma mark GeoIP::hasDatabase
 /* boolean GeoIP::hasDatabase(int GeoIP::CONSTANT);
  * Returns the boolean value of if a specified database is available on
  * the system. */
@@ -151,6 +203,7 @@ PHP_METHOD(GeoIP, hasDatabase) {
 	return;
 }
 
+#pragma mark GeoIP::init
 /* void GeoIP::init(optional string custom_directory)
  * Initalize the GeoIP library for use. This is a user function so that
  * a custom directory can be used for the databases. (GeoIP C library is
@@ -181,6 +234,7 @@ PHP_METHOD(GeoIP, init) {
  	return;
 }
 
+#pragma mark GeoIP->__construct
 /* void GeoIP::__construct(optional string host)
  * Create an instance of the GeoIP object. If the hostname is given then
  * store that in the public host property. */
@@ -208,6 +262,7 @@ PHP_METHOD(GeoIP, __construct) {
  	return;
 }
 
+#pragma mark GeoIP->getContinent
 /* string GeoIP->getContinent(void);
  * Get the contientnet code for wherever the country of the currently
  * stored host value is. */
@@ -233,6 +288,7 @@ PHP_METHOD(GeoIP, getContinentCode) {
 	RETURN_STRING(GeoIP_country_continent[ccode],1)
 }
 
+#pragma mark GeoIP->getCountry
 /* string GeoIP->getCountry(optional int length);
  * Get the country code for the currently stored host value from the
  * GeoIP database. The optional int length may be 2 or 3, for selecting
@@ -265,6 +321,7 @@ PHP_METHOD(GeoIP, getCountryCode) {
 	RETURN_STRING(country,1);		
 }
 
+#pragma mark GeoIP->getCountryName
 PHP_METHOD(GeoIP, getCountryName) {
 
 	GeoIP       *geo;
@@ -287,6 +344,7 @@ PHP_METHOD(GeoIP, getCountryName) {
 	RETURN_STRING(country,1);	
 }
 
+#pragma mark GeoIP->getID
 PHP_METHOD(GeoIP, getID) {
 	
 	GeoIP *geo;
@@ -308,6 +366,7 @@ PHP_METHOD(GeoIP, getID) {
 	RETURN_LONG(id);
 }
 
+#pragma mark GeoIP->getRecord
 /* object GeoIP->getRecord(void);
  * Returns an object of the record details for the currently specified host.
  */
@@ -316,11 +375,12 @@ PHP_METHOD(GeoIP, getRecord) {
 
 	GeoIP       *geo;
 	GeoIPRecord *rec;
-	char  *regname;
-	char  *timezone;
-	double clon;
-	double clat;
+	char        *regname;
+	char        *timezone;
+	double       clon;
+	double       clat;
 	zval        *host = geoipo_get_object_property(getThis(),"host" TSRMLS_CC);
+	obj_geoip_s *this = (obj_geoip_s *)zend_objects_get_address(getThis() TSRMLS_CC);
 
 	if(!GeoIP_db_avail(GEOIP_CITY_EDITION_REV1) && !GeoIP_db_avail(GEOIP_CITY_EDITION_REV0)) {
 		php_error_docref(
@@ -330,14 +390,19 @@ PHP_METHOD(GeoIP, getRecord) {
 		); RETURN_FALSE;
 	}
 
-	
-	if(GeoIP_db_avail(GEOIP_CITY_EDITION_REV1))
-		geo = GeoIP_open_type(GEOIP_CITY_EDITION_REV1,GEOIP_STANDARD);
-	else
-		geo = GeoIP_open_type(GEOIP_CITY_EDITION_REV0,GEOIP_STANDARD);
+	if(this->recordcache == NULL) {
+		//php_printf("database lookup %s\n",Z_STRVAL_P(host));
+		if(GeoIP_db_avail(GEOIP_CITY_EDITION_REV1))
+			geo = GeoIP_open_type(GEOIP_CITY_EDITION_REV1,GEOIP_STANDARD);
+		else
+			geo = GeoIP_open_type(GEOIP_CITY_EDITION_REV0,GEOIP_STANDARD);
 		
-	rec = GeoIP_record_by_name(geo,Z_STRVAL_P(host));
-	GeoIP_delete(geo);
+		rec = GeoIP_record_by_name(geo,Z_STRVAL_P(host));
+		GeoIP_delete(geo);
+	} else {
+		//php_printf("cache reuse %s\n",Z_STRVAL_P(host));
+		rec = this->recordcache;
+	}
 	
 	if(rec == NULL) {
 		RETURN_FALSE;
@@ -364,10 +429,17 @@ PHP_METHOD(GeoIP, getRecord) {
 	geoipo_return_object_property(return_value, "Longitude",     &clat,               IS_DOUBLE TSRMLS_CC);
 	geoipo_return_object_property(return_value, "TimeZone",      timezone,            IS_STRING TSRMLS_CC);
 	
-	GeoIPRecord_delete(rec);
+	// GeoIPRecord_delete(rec);
+	// keep around the record object instead, this way if an app does something like:
+	// $geo->getRecord()->CountryName; $geo->getRecord()->RegionName;
+	// it is not actually looking up the library/database twice. we will then invalidate
+	// the cache when the host property is changed.
+	if(this->recordcache == NULL) this->recordcache = rec;
+
 	return;
 }
 
+#pragma mark GeoIP->getRegion
 /* object GeoIP->getRegion(void);
  * Returns an object of the region (country code, region code, region name). If the specific
  * region database exists it will use that, else it will fall back to the (potentally)
@@ -379,8 +451,8 @@ PHP_METHOD(GeoIP, getRegion) {
 
 	GeoIP      *geo;
 	long        dbid;
-	char *regname;
-	char *timezone;
+	char       *regname;
+	char       *timezone;
 	zval       *host = geoipo_get_object_property(getThis(),"host" TSRMLS_CC);
 
 	//. use the region database if it exists.
