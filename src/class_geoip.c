@@ -29,11 +29,11 @@ PHP_MINIT_FUNCTION(class_geoip) {
 		);		
 	}
 	
-		zend_declare_class_constant_string(
-			class_geoip_ce,
-			"LIBRARY_VERSION", strlen("LIBRARY_VERSION"),
-			GeoIP_lib_version() TSRMLS_CC
-		);	
+	zend_declare_class_constant_string(
+		class_geoip_ce,
+		"LIBRARY_VERSION", strlen("LIBRARY_VERSION"),
+		GeoIP_lib_version() TSRMLS_CC
+	);	
 
 	return SUCCESS;
 }
@@ -122,9 +122,9 @@ obj_geoip_free(void *obj TSRMLS_DC) {
 	return;
 }
 
-#pragma mark GeoIP::getDatabaseFilename
-/* string GeoIP::getDatabaseFilename(int GeoIP::CONSTANT);
- * Return the path to the filename of the selected database. */
+#pragma mark string GeoIP::getDatabaseFilename(int GeoIP::CONSTANT);
+/* returns the file path to the specified database. The database may
+or may not actually exist on disk. */
 
 PHP_METHOD(GeoIP, getDatabaseFile) {
 	long dbid = 0;
@@ -146,13 +146,14 @@ PHP_METHOD(GeoIP, getDatabaseFile) {
 	RETURN_STRING(GeoIPDBFileName[dbid],1);
 }
 
-#pragma mark GeoIP::getDatabaseInfo
-/* string GeoIP::getDatabaseInfo(int GeoIP::CONSTANT);
- * Return an info string about the selected database. */
+#pragma mark string GeoIP::getDatabaseInfo(int GeoIP::CONSTANT);
+/* returns whatever info libGeoIP wants to return about for the
+specified database. Generally this will end up telling you about
+the database version number and copyright info. */
 
 PHP_METHOD(GeoIP, getDatabaseInfo) {
-	long   dbid = 0;
-	char  *info;
+	long dbid = 0;
+	char *info;
 	GeoIP *geo;
 	
 	if(zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "l", &dbid) == FAILURE) {
@@ -177,14 +178,14 @@ PHP_METHOD(GeoIP, getDatabaseInfo) {
 	info = GeoIP_database_info(geo); // malloc'd
 	GeoIP_delete(geo);
 
-	RETVAL_STRING(info,1); free(info);
+	RETVAL_STRING(info,1);
+	free(info);
 	return;
 }
 
-#pragma mark GeoIP::hasDatabase
-/* boolean GeoIP::hasDatabase(int GeoIP::CONSTANT);
- * Returns the boolean value of if a specified database is available on
- * the system. */
+#pragma mark boolean GeoIP::hasDatabase(int GeoIP::CONSTANT);
+/* returns a boolean value describing if the database you specified
+actually exists on disk for reals or not. */
 
 PHP_METHOD(GeoIP, hasDatabase) {
 	long dbid = 0;
@@ -209,11 +210,12 @@ PHP_METHOD(GeoIP, hasDatabase) {
 	return;
 }
 
-#pragma mark GeoIP::init
-/* void GeoIP::init(optional string custom_directory)
- * Initalize the GeoIP library for use. This is a user function so that
- * a custom directory can be used for the databases. (GeoIP C library is
- * a set and you-have-to-forget onetimesetall). */
+#pragma mark void GeoIP::init(optional string directory);
+/* initialize the GeoIP library. this is done automatically for you
+if you try to use a GeoIP method without having done it already.
+however if you do it yourself before you do anything else with GeoIP
+you can specify a custom directory for the library to find the
+databases instead of the default systemwide ones. */
 
 PHP_METHOD(GeoIP, init) {
 	char *dir = NULL;
@@ -240,10 +242,10 @@ PHP_METHOD(GeoIP, init) {
  	return;
 }
 
-#pragma mark GeoIP->__construct
-/* void GeoIP::__construct(optional string host)
- * Create an instance of the GeoIP object. If the hostname is given then
- * store that in the public host property. */
+#pragma mark void GeoIP->__construct(optional string host);
+/* this is your default object constructor for when an object is
+created. if an optional string is given then that is the host name
+that will be set default for you in the public host property. */
  
 PHP_METHOD(GeoIP, __construct) { 	
  	char *host;
@@ -268,10 +270,9 @@ PHP_METHOD(GeoIP, __construct) {
  	return;
 }
 
-#pragma mark GeoIP->getContinent
-/* string GeoIP->getContinent(void);
- * Get the contientnet code for wherever the country of the currently
- * stored host value is. */
+#pragma mark string GeoIP->getContinent(void);
+/* this will return the continent code for the host that is currently
+specified on the object. */
 
 PHP_METHOD(GeoIP, getContinentCode) {
 	GeoIP *geo;
@@ -294,12 +295,12 @@ PHP_METHOD(GeoIP, getContinentCode) {
 	RETURN_STRING(GeoIP_country_continent[ccode],1)
 }
 
-#pragma mark GeoIP->getCountry
-/* string GeoIP->getCountry(optional int length);
- * Get the country code for the currently stored host value from the
- * GeoIP database. The optional int length may be 2 or 3, for selecting
- * two or three character abbreviations from GeoIP. The default is two
- * characters. */
+#pragma mark string GeoIP->getCountry(optional int length default 2)
+/* return the country code for the host that is currently specified on
+the object. by default it will return the 2 character code, however if
+you request the 3 character code using the optional argument then that
+is what you will get. valid values for the optional argument are
+limited to the value 2 or 3. */
  
 PHP_METHOD(GeoIP, getCountryCode) {
 	GeoIP       *geo;
@@ -327,7 +328,10 @@ PHP_METHOD(GeoIP, getCountryCode) {
 	RETURN_STRING(country,1);		
 }
 
-#pragma mark GeoIP->getCountryName
+#pragma mark string GeoIP->getCountryName(void);
+/* return the country name for the host that is currently specified
+on the object. */
+
 PHP_METHOD(GeoIP, getCountryName) {
 
 	GeoIP       *geo;
@@ -350,7 +354,11 @@ PHP_METHOD(GeoIP, getCountryName) {
 	RETURN_STRING(country,1);	
 }
 
-#pragma mark GeoIP->getID
+#pragma mark int GeoIP->getID(void);
+/* return the "id" for the host that is currently specified on the
+object. it seems that the id is a unique integer standing for the
+country. */
+
 PHP_METHOD(GeoIP, getID) {
 	
 	GeoIP *geo;
@@ -372,9 +380,25 @@ PHP_METHOD(GeoIP, getID) {
 	RETURN_LONG(id);
 }
 
-#pragma mark GeoIP->getRecord
-/* object GeoIP->getRecord(void);
- * Returns an object of the record details for the currently specified host.
+#pragma mark object GeoIP->getRecord(void)
+/* returns an object of values for the host currently specified on the
+object. this object is cached in the object instance so that multiple
+calls to this pulling field names out will not cause database lookups
+for the same data over and over. if you need most all of the
+information at once, this is your best method to use. */
+
+/* returned object properties:
+ * string ContinentCode
+ * string CountryCode
+ * string CountryCode3
+ * string CountryName
+ * string RegionCode
+ * string RegionName
+ * string City
+ * string PostalCode
+ * double Latitude
+ * double Longitude
+ * string TimeZone
  */
 
 PHP_METHOD(GeoIP, getRecord) {
@@ -445,13 +469,21 @@ PHP_METHOD(GeoIP, getRecord) {
 	return;
 }
 
-#pragma mark GeoIP->getRegion
-/* object GeoIP->getRegion(void);
- * Returns an object of the region (country code, region code, region name). If the specific
- * region database exists it will use that, else it will fall back to the (potentally)
- * free city database which also has those details. One of the properties will be the
- * database id that you can check against the EDITION constants if you needed to know
- * which one it used. */
+#pragma mark object GeoIP->getRegion(void);
+/* returns an object of values for the host currently specified on the
+object. this result is cached in the same way as getRecord. if the
+official region database exists it will attempt to use it because it
+will be smaller ergo faster to scan. else it will use the city
+database which contains the same information. if you only need basic
+country info about a host, this is your best method to use. */
+
+/* returned object properties:
+ * int DBID
+ * string CountryCode
+ * string RegionCode
+ * string RegionName
+ * string TimeZone
+ */
 
 PHP_METHOD(GeoIP, getRegion) {
 
