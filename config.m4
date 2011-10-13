@@ -1,3 +1,4 @@
+
 PHP_ARG_ENABLE(
 	geoipo,
 	[Whether to enable the "geoipo" extension],
@@ -29,8 +30,21 @@ fi
 
 PHP_SUBST(GEOIPO_SHARED_LIBADD)
 
-AC_CHECK_LIB(geoip, GeoIP_new, [PHP_ADD_LIBRARY(geoip,,GEOIPO_SHARED_LIBADD)], [AC_MSG_ERROR([libgeoip not found])] )
-AC_CHECK_LIB(geoip, GeoIP_cleanup, [PHP_ADD_LIBRARY(geoip,,GEOIPO_SHARED_LIBADD)], [AC_MSG_ERROR([libgeoip >= 1.4.7 failure])] )
+PHP_CHECK_LIBRARY(
+	GeoIP,
+	GeoIP_new,
+	[ PHP_ADD_LIBRARY_WITH_PATH(GeoIP, $GEOIPO_DIR/lib, GEOIPO_SHARED_LIBADD) ],
+	[ AC_MSG_ERROR([libgeoip not found]) ],
+	[ -L$GEOIPO_DIR/$PHP_LIBDIR -lm ]
+)
+
+PHP_CHECK_LIBRARY(
+	GeoIP,
+	GeoIP_cleanup,
+	[ PHP_ADD_LIBRARY_WITH_PATH(GeoIP, $GEOIPO_DIR/lib, GEOIPO_SHARED_LIBADD) ],
+	[ AC_MSG_ERROR([libgeoip >= 1.4.7 failed, update your library]) ],
+	[ -L$GEOIPO_DIR/$PHP_LIBDIR -lm ]
+)
 
 PHP_NEW_EXTENSION(
 	[geoipo],
