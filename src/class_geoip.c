@@ -242,6 +242,35 @@ PHP_METHOD(GeoIP, init) {
  	return;
 }
 
+#pragma mark array GeoIP::listDatabases(void);
+/* list all the databases that GeoIP could use. this does not mean they
+are really there, check the property for that. but if they were there
+then let me tell you... */
+
+PHP_METHOD(GeoIP, listDatabases) {
+	int a = 0;
+	zval *obj;
+	
+	geoipo_init(TSRMLS_C);	
+	
+	array_init(return_value);
+	for(a = 0; a < NUM_DB_TYPES; a++) {
+		if(GeoIPDBDescription[a] == NULL) continue;
+		if(GeoIPDBFileName[a] == NULL) continue;
+
+		ALLOC_INIT_ZVAL(obj);
+		object_init(obj);
+		add_property_long(  obj, "DBID",        a                              );
+		add_property_string(obj, "Description", (char*)GeoIPDBDescription[a], 1);
+		add_property_string(obj, "Filename",    (char*)GeoIPDBFileName[a],    1);
+		add_property_bool(  obj, "Available",   GeoIP_db_avail(a)              );
+	
+		add_next_index_zval(return_value, obj);
+	}
+
+	return;
+}
+
 #pragma mark void GeoIP->__construct(optional string host);
 /* this is your default object constructor for when an object is
 created. if an optional string is given then that is the host name

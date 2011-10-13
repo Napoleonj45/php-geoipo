@@ -22,6 +22,7 @@ PHP_METHOD(GeoIP, getDatabaseFile);
 PHP_METHOD(GeoIP, getDatabaseInfo);
 PHP_METHOD(GeoIP, hasDatabase);
 PHP_METHOD(GeoIP, init);
+PHP_METHOD(GeoIP, listDatabases);
 
 // instance methods.
 PHP_METHOD(GeoIP, __construct);
@@ -38,6 +39,7 @@ static zend_function_entry   class_geoip_methods[] = {
 	PHP_ME(GeoIP, getDatabaseInfo,  NULL, (ZEND_ACC_PUBLIC|ZEND_ACC_ALLOW_STATIC))
 	PHP_ME(GeoIP, hasDatabase,      NULL, (ZEND_ACC_PUBLIC|ZEND_ACC_ALLOW_STATIC))
 	PHP_ME(GeoIP, init,             NULL, (ZEND_ACC_PUBLIC|ZEND_ACC_ALLOW_STATIC))
+	PHP_ME(GeoIP, listDatabases,    NULL, (ZEND_ACC_PUBLIC|ZEND_ACC_ALLOW_STATIC))
 	PHP_ME(GeoIP, __construct,      NULL, (ZEND_ACC_PUBLIC|ZEND_ACC_CTOR))
 	PHP_ME(GeoIP, getContinentCode, NULL, (ZEND_ACC_PUBLIC))
 	PHP_ME(GeoIP, getCountryCode,   NULL, (ZEND_ACC_PUBLIC))
