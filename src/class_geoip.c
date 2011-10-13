@@ -28,6 +28,12 @@ PHP_MINIT_FUNCTION(class_geoip) {
 			(long)item.lc TSRMLS_CC
 		);		
 	}
+	
+		zend_declare_class_constant_string(
+			class_geoip_ce,
+			"LIBRARY_VERSION", strlen("LIBRARY_VERSION"),
+			GeoIP_lib_version() TSRMLS_CC
+		);	
 
 	return SUCCESS;
 }
