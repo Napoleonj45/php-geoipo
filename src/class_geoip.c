@@ -391,7 +391,7 @@ PHP_METHOD(GeoIP, getRecord) {
 	}
 
 	if(this->recordcache == NULL) {
-		//php_printf("database lookup %s\n",Z_STRVAL_P(host));
+		//php_printf("record lookup %s\n",Z_STRVAL_P(host));
 		if(GeoIP_db_avail(GEOIP_CITY_EDITION_REV1))
 			geo = GeoIP_open_type(GEOIP_CITY_EDITION_REV1,GEOIP_STANDARD);
 		else
@@ -400,7 +400,7 @@ PHP_METHOD(GeoIP, getRecord) {
 		rec = GeoIP_record_by_name(geo,Z_STRVAL_P(host));
 		GeoIP_delete(geo);
 	} else {
-		//php_printf("cache reuse %s\n",Z_STRVAL_P(host));
+		//php_printf("record reuse %s\n",Z_STRVAL_P(host));
 		rec = this->recordcache;
 	}
 	
@@ -449,26 +449,33 @@ PHP_METHOD(GeoIP, getRecord) {
 
 PHP_METHOD(GeoIP, getRegion) {
 
-	GeoIP      *geo;
-	long        dbid;
-	char       *regname;
-	char       *timezone;
-	zval       *host = geoipo_get_object_property(getThis(),"host" TSRMLS_CC);
+	GeoIP       *geo;
+	long         dbid;
+	char        *regname;
+	char        *timezone;
+	zval        *host = geoipo_get_object_property(getThis(),"host" TSRMLS_CC);
+	obj_geoip_s *this = (obj_geoip_s *)zend_objects_get_address(getThis() TSRMLS_CC);
 
 	//. use the region database if it exists.
 	if(GeoIP_db_avail(GEOIP_REGION_EDITION_REV1) || GeoIP_db_avail(GEOIP_REGION_EDITION_REV0)) {
 		GeoIPRegion *reg;
 
-		if(GeoIP_db_avail(GEOIP_REGION_EDITION_REV1)) {
-			geo = GeoIP_open_type(GEOIP_REGION_EDITION_REV1,GEOIP_STANDARD);
-			dbid = GEOIP_REGION_EDITION_REV1;
+		if(this->regioncache == NULL) {
+			//php_printf("region lookup %s\n",Z_STRVAL_P(host));
+			if(GeoIP_db_avail(GEOIP_REGION_EDITION_REV1)) {
+				geo = GeoIP_open_type(GEOIP_REGION_EDITION_REV1,GEOIP_STANDARD);
+				dbid = GEOIP_REGION_EDITION_REV1;
+			} else {
+				geo = GeoIP_open_type(GEOIP_REGION_EDITION_REV0,GEOIP_STANDARD);
+				dbid = GEOIP_REGION_EDITION_REV0;
+			}
+				
+			reg = GeoIP_region_by_name(geo,Z_STRVAL_P(host));
+			GeoIP_delete(geo);
 		} else {
-			geo = GeoIP_open_type(GEOIP_REGION_EDITION_REV0,GEOIP_STANDARD);
-			dbid = GEOIP_REGION_EDITION_REV0;
+			//php_printf("region reuse %s\n",Z_STRVAL_P(host));
+			reg = this->regioncache;
 		}
-			
-		reg = GeoIP_region_by_name(geo,Z_STRVAL_P(host));
-		GeoIP_delete(geo);
 
 		if(reg == NULL) {
 			RETURN_FALSE;
@@ -484,7 +491,9 @@ PHP_METHOD(GeoIP, getRegion) {
 		geoipo_return_object_property(return_value, "RegionName",  regname,           IS_STRING TSRMLS_CC);
 		geoipo_return_object_property(return_value, "TimeZone",    timezone,          IS_STRING TSRMLS_CC);
 
-		GeoIPRegion_delete(reg);
+		//GeoIPRegion_delete(reg);
+		if(this->regioncache == NULL) this->regioncache = reg;
+		
 		return;		
 	}
 	
@@ -492,16 +501,22 @@ PHP_METHOD(GeoIP, getRegion) {
 	else if(GeoIP_db_avail(GEOIP_CITY_EDITION_REV1) || GeoIP_db_avail(GEOIP_CITY_EDITION_REV0)) {
 		GeoIPRecord *rec;
 
-		if(GeoIP_db_avail(GEOIP_CITY_EDITION_REV1)) {
-			geo = GeoIP_open_type(GEOIP_CITY_EDITION_REV1,GEOIP_STANDARD);
-			dbid = GEOIP_CITY_EDITION_REV1;
+		if(this->recordcache == NULL) {
+			//php_printf("record lookup %s\n",Z_STRVAL_P(host));
+			if(GeoIP_db_avail(GEOIP_CITY_EDITION_REV1)) {
+				geo = GeoIP_open_type(GEOIP_CITY_EDITION_REV1,GEOIP_STANDARD);
+				dbid = GEOIP_CITY_EDITION_REV1;
+			} else {
+				geo = GeoIP_open_type(GEOIP_CITY_EDITION_REV0,GEOIP_STANDARD);
+				dbid = GEOIP_CITY_EDITION_REV0;
+			}
+	
+			rec = GeoIP_record_by_name(geo,Z_STRVAL_P(host));
+			GeoIP_delete(geo);
 		} else {
-			geo = GeoIP_open_type(GEOIP_CITY_EDITION_REV0,GEOIP_STANDARD);
-			dbid = GEOIP_CITY_EDITION_REV0;
+			//php_printf("record reuse %s\n",Z_STRVAL_P(host));
+			rec = this->recordcache;
 		}
-
-		rec = GeoIP_record_by_name(geo,Z_STRVAL_P(host));
-		GeoIP_delete(geo);
 		
 		if(rec == NULL) {
 			RETURN_FALSE;
@@ -517,7 +532,9 @@ PHP_METHOD(GeoIP, getRegion) {
 		geoipo_return_object_property(return_value, "RegionName",  regname,           IS_STRING TSRMLS_CC);
 		geoipo_return_object_property(return_value, "TimeZone",    timezone,          IS_STRING TSRMLS_CC);	
 			
-		GeoIPRecord_delete(rec);
+		//GeoIPRecord_delete(rec);
+		if(this->recordcache == NULL) this->recordcache = rec;
+		
 		return;
 	}
 	

@@ -8,12 +8,22 @@ print_r(array(
 	$geo->getRecord()->RegionName
 ));
 
+print_r(array(
+	$geo->getRegion()->CountryCode,
+	$geo->getRegion()->RegionCode
+));
+
 $geo->host = 'opsat.net';
 print_r(array(
 	$geo->getRecord()->CountryCode,
 	$geo->getRecord()->CountryName,
 	$geo->getRecord()->RegionCode,
 	$geo->getRecord()->RegionName
+));
+
+print_r(array(
+	$geo->getRegion()->CountryCode,
+	$geo->getRegion()->RegionCode
 ));
 
 /*////////////////////////////////////////
