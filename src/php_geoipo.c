@@ -56,7 +56,7 @@ ZEND_GET_MODULE(geoipo)
  * object. */
 
 zval *
-geoipo_get_object_property(zval *object, const char *property) {
+geoipo_get_object_property(zval *object, const char *property TSRMLS_DC) {
 	zval *member;
 	zval *value;
 	zval *output;
@@ -70,7 +70,7 @@ geoipo_get_object_property(zval *object, const char *property) {
 }
 
 void
-geoipo_init() {
+geoipo_init(TSRMLS_D) {
 	_GeoIP_setup_dbfilename();
 	GEOIPOG(geoipo_has_initd) = 1;
 	return;
@@ -90,8 +90,8 @@ geoipo_init() {
  */
 
 void
-geoipo_return_object_property(zval *object, char *key, void *value, long type) {
-
+geoipo_return_object_property(zval *object, char *key, void *value, long type TSRMLS_DC) {
+	
 	switch(type) {
 		case IS_DOUBLE: {
 			if(value != NULL) add_property_double(object,key,*(double*)value);

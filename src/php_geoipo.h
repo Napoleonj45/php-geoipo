@@ -22,9 +22,9 @@ typedef struct _class_const_list {
 	long lc;        // library constant (from geoip)
 } class_const_list;
 
-zval *geoipo_get_object_property(zval *, const char *);
-void geoipo_init(void);
-void geoipo_return_object_property(zval *, char *, void *, long);
+zval *geoipo_get_object_property(zval *, const char * TSRMLS_DC);
+void geoipo_init(TSRMLS_D);
+void geoipo_return_object_property(zval *, char *, void *, long TSRMLS_DC);
 
 ZEND_BEGIN_MODULE_GLOBALS(geoipo)
 int geoipo_has_initd;
