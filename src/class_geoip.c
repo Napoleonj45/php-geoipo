@@ -424,7 +424,7 @@ PHP_METHOD(GeoIP, getISP) {
 	}
 	
 	geo = GeoIP_open_type(GEOIP_ISP_EDITION,GEOIP_STANDARD);
-	isp = GeoIP_name_by_name(geo,host);
+	isp = GeoIP_name_by_name(geo,Z_STRVAL_P(host));
 	GeoIP_delete(geo);
 	
 	if(isp == NULL) {
