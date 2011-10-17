@@ -73,9 +73,9 @@ Other Important Notes:
 	know how to write one or how to Windows Windows Windows.
 	
 	Tested On:
-		OS X Lion with the PHP it comes with.
-		Ubuntu 11.04 with libGeoIP from the repositories.
-		FreeBSD 8 with libGeoIP from ports.
+		OS X Lion with the PHP it comes with and libGeoIP from source.
+		Ubuntu 11.04 with PHP and libGeoIP from the repositories.
+		FreeBSD 8 with PHP and libGeoIP from ports.
 	
 	On UNIX style systems, the GeoIP database are usually found in
 	/usr/share/GeoIP, /usr/local/share/GeoIP, or some other path similar to
