@@ -10,6 +10,17 @@ for PHP.
 To do this the original would have required too much refactoring, so I have
 I have built this from the ground up.
 
+Demo of it working on FreeBSD with PHP with ZTS:
+	* http://zenthis.org/tests/geoip
+
+--------
+
+Authors:
+	Bob Majdak Jr (@bobmajdakjr)
+	
+Contributors:
+	>_>;
+
 --------
 
 Completed API:
@@ -54,10 +65,6 @@ Really Important Notes:
 	
 	So, php-geoip (the original) or php-geoipo (this) pick one not both.
 	
-	Also, I do not have the pay-for databases to test getISP() and getOrg(), so I
-	have	no idea if they work correctly. All the other methods though (can) use the
-	free	databases and are tested.
-
 --------
 
 Other Important Notes:
@@ -85,11 +92,21 @@ Other Important Notes:
 
 --------
 
-Authors:
-	Bob Majdak Jr (@bobmajdakjr)
-	
-Contributors:
-	>_>;
+Build Instructions
+
+This compiles just like any other module for PHP. Therefore you will need the
+PHP dev packages for your system installed if you did not compile your own PHP
+from source.
+
+	1) install libGeoIP.
+		* FreeBSD: /usr/ports/net/GeoIP
+		* Ubuntu: apt-get install libgeoip1 libgeoip-dev
+		* Else: http://www.maxmind.com/app/c
+		
+	2) install php-geoipo
+		* phpize && ./configure
+		* make
+		* make install
 
 --------
 
