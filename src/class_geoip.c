@@ -409,6 +409,32 @@ PHP_METHOD(GeoIP, getID) {
 	RETURN_LONG(id);
 }
 
+PHP_METHOD(GeoIP, getISP) {
+
+	GeoIP *geo;
+	char  *isp;
+	zval  *host = geoipo_get_object_property(getThis(),"host" TSRMLS_CC);
+	
+	if(!GeoIP_db_avail(GEOIP_ISP_EDITION)) {
+		php_error_docref(
+			NULL TSRMLS_CC,
+			E_WARNING, GEOIPO_ERROR_NO_DATABASE,
+			GeoIPDBFileName[GEOIP_ISP_EDITION]
+		); RETURN_FALSE;
+	}
+	
+	geo = GeoIP_open_type(GEOIP_ISP_EDITION,GEOIP_STANDARD);
+	isp = GeoIP_name_by_name(geo,host);
+	GeoIP_delete(geo);
+	
+	if(isp == NULL) {
+		RETURN_FALSE;
+	}
+	
+	RETVAL_STRING(isp,1);
+	free(isp);
+}
+
 #pragma mark object GeoIP->getRecord(void)
 /* returns an object of values for the host currently specified on the
 object. this object is cached in the object instance so that multiple

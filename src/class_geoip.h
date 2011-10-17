@@ -30,6 +30,7 @@ PHP_METHOD(GeoIP, getContinentCode);
 PHP_METHOD(GeoIP, getCountryCode);
 PHP_METHOD(GeoIP, getCountryName);
 PHP_METHOD(GeoIP, getID);
+PHP_METHOD(GeoIP, getISP);
 PHP_METHOD(GeoIP, getRecord);
 PHP_METHOD(GeoIP, getRegion);
 
@@ -45,6 +46,7 @@ static zend_function_entry   class_geoip_methods[] = {
 	PHP_ME(GeoIP, getCountryCode,   NULL, (ZEND_ACC_PUBLIC))
 	PHP_ME(GeoIP, getCountryName,   NULL, (ZEND_ACC_PUBLIC))
 	PHP_ME(GeoIP, getID,            NULL, (ZEND_ACC_PUBLIC))
+	PHP_ME(GeoIP, getISP,            NULL, (ZEND_ACC_PUBLIC))
 	PHP_ME(GeoIP, getRecord,        NULL, (ZEND_ACC_PUBLIC))
 	PHP_ME(GeoIP, getRegion,        NULL, (ZEND_ACC_PUBLIC))
 	{NULL,NULL,NULL}
