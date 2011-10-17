@@ -29,6 +29,7 @@ Completed API:
 	string  GeoIP->getCountryCode(optional int len);
 	string  GeoIP->getCountryName(void);
 	int     GeoIP->getID(void);
+	string  GeoIP->getISP(void);
 	object  GeoIP->getRecord(void);
 	object  GeoIP->getRegion(void);
 
@@ -52,6 +53,10 @@ Really Important Notes:
 	the path per application without editing php.ini.
 	
 	So, php-geoip (the original) or php-geoipo (this) pick one not both.
+	
+	Also, I do not have the pay-for databases to test getISP() and getOrg(), so I
+	have	no idea if they work correctly. All the other methods though (can) use the
+	free	databases and are tested.
 
 --------
 
