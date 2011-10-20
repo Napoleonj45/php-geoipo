@@ -34,6 +34,7 @@ Completed API:
 	string  GeoIP::getDatabaseInfo(int dbid);
 	boolean GeoIP::hasDatabase(int dbid);
 	void    GeoIP::init(optional string directory);
+	array   GeoIP::listDatabases(void);
 	
 	Instance Properties
 	string  GeoIP->host
@@ -58,16 +59,10 @@ Requirements:
 --------
 
 Really Important Notes:
-
-	The original php-geoip must not be loaded at the same time as this module.
-	I am not being anti-competitive. The libgeoip from MaxMind only allows you
-	to define the custom directory once, and once it is set you cannot change it
-	and it is locked for the entire duration of the application. If the original
-	php-geoip loads before this module then it will lock you to the system paths
-	by default. Half the reason this module was written was so that you could set
-	the path per application without editing php.ini.
 	
-	So, php-geoip (the original) or php-geoipo (this) pick one not both.
+	It used to be important that both geoip and geoipo were not loaded at
+	the same time, but I believes that no longer matters due to advances
+	this module has made.
 	
 --------
 
@@ -79,7 +74,7 @@ Other Important Notes:
 	Tested On:
 		OS X Lion with the PHP it comes with and libGeoIP from source.
 		Ubuntu 11.04 with PHP and libGeoIP from the repositories.
-		FreeBSD 8 with PHP and libGeoIP from ports.
+		FreeBSD 8 with PHP (ZTS) and libGeoIP from ports.
 	
 	On UNIX style systems, the GeoIP database are usually found in
 	/usr/share/GeoIP, /usr/local/share/GeoIP, or some other path similar to
