@@ -11,7 +11,7 @@ To do this the original would have required too much refactoring, so I have
 I have built this from the ground up.
 
 Demo of it working on FreeBSD with PHP with ZTS:
-	* http://zenthis.org/tests/geoip
+	* http://zenthis.org/tests/geoip.php
 	* there is a link at the bottom to view the source.
 
 Quick How-To for setting up and using geoipo.
