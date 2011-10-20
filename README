@@ -14,6 +14,9 @@ Demo of it working on FreeBSD with PHP with ZTS:
 	* http://zenthis.org/tests/geoip
 	* there is a link at the bottom to view the source.
 
+Quick How-To for setting up and using geoipo.
+	* http://squirrelshaterobots.com/programming/php/geoip-in-php-with-the-new-php-geoipo-extension/
+
 --------
 
 Authors:
