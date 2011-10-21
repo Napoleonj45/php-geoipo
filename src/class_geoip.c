@@ -242,6 +242,32 @@ PHP_METHOD(GeoIP, init) {
  	return;
 }
 
+#pragma mark array GeoIP::listCountryCodes(optional int length default 2);
+/* return an assoc array of all the country codes that are statically
+defined in the GeoIP library. The array keys will be the code and the
+value will be the country name. Valid values for the length are 2 or 3. */
+
+PHP_METHOD(GeoIP, listCountryCodes) {
+	int a = 0;
+	unsigned int cnum = GeoIP_num_countries();
+	long abbrlen = 0;
+	
+ 	zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "|l", &abbrlen);
+ 	if(abbrlen != 3) abbrlen = 2;	
+	
+	array_init(return_value);
+	
+	for(a = 0; a < cnum; a++) {
+		add_assoc_string(
+			return_value,
+			((abbrlen==3)?(GeoIP_code3_by_id(a)):(GeoIP_code_by_id(a))),
+			GeoIP_name_by_id(a), 1
+		);
+	}
+
+	return;
+}
+
 #pragma mark array GeoIP::listDatabases(void);
 /* list all the databases that GeoIP could use. this does not mean they
 are really there, check the property for that. but if they were there
@@ -324,7 +350,7 @@ PHP_METHOD(GeoIP, getContinentCode) {
 	RETURN_STRING(GeoIP_country_continent[ccode],1)
 }
 
-#pragma mark string GeoIP->getCountry(optional int length default 2)
+#pragma mark string GeoIP->getCountryCode(optional int length default 2)
 /* return the country code for the host that is currently specified on
 the object. by default it will return the 2 character code, however if
 you request the 3 character code using the optional argument then that
