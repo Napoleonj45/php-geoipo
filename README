@@ -34,6 +34,7 @@ Completed API:
 	string  GeoIP::getDatabaseInfo(int dbid);
 	boolean GeoIP::hasDatabase(int dbid);
 	void    GeoIP::init(optional string directory);
+	array   GeoIP::listCountryCodes(optional int len default 2);
 	array   GeoIP::listDatabases(void);
 	
 	Instance Properties
@@ -42,7 +43,7 @@ Completed API:
 	Instance Methods
 	object  GeoIP->__construct(optional string host);
 	string  GeoIP->getContinentCode(void);
-	string  GeoIP->getCountryCode(optional int len);
+	string  GeoIP->getCountryCode(optional int len default 2);
 	string  GeoIP->getCountryName(void);
 	int     GeoIP->getID(void);
 	string  GeoIP->getISP(void);
