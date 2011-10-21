@@ -261,7 +261,7 @@ PHP_METHOD(GeoIP, listCountryCodes) {
 		add_assoc_string(
 			return_value,
 			((abbrlen==3)?(GeoIP_code3_by_id(a)):(GeoIP_code_by_id(a))),
-			GeoIP_name_by_id(a), 1
+			(char*)GeoIP_name_by_id(a), 1
 		);
 	}
 
