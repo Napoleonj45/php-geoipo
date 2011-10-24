@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<package packagerversion="1.8.0" version="2.0" xmlns="http://pear.php.net/dtd/package-2.0" xmlns:tasks="http://pear.php.net/dtd/tasks-1.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://pear.php.net/dtd/tasks-1.0 http://pear.php.net/dtd/tasks-1.0.xsd http://pear.php.net/dtd/package-2.0 http://pear.php.net/dtd/package-2.0.xsd">
-	<name>GeoIPo</name>
+<package xmlns="http://pear.php.net/dtd/package-2.0" xmlns:tasks="http://pear.php.net/dtd/tasks-1.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" packagerversion="1.4.7" version="2.0" xsi:schemaLocation="http://pear.php.net/dtd/tasks-1.0 http://pear.php.net/dtd/tasks-1.0.xsd http://pear.php.net/dtd/package-2.0 http://pear.php.net/dtd/package-2.0.xsd">
+	<name>geoipo</name>
 	<channel>pecl.squirrelshaterobots.com</channel>
-	<summary>GeoIPo is an object-oriented extension for the libGeoIP library from MaxMind.</summary>
+	<summary>Object oriented GeoIP extension for libGeoIP</summary>
 	<description>GeoIPo is an object-oriented extension for the libGeoIP library from MaxMind.</description>
 	<lead>
 		<name>Bob Majdak Jr</name>
@@ -22,12 +22,20 @@
 	</stability>
 	<license uri="http://www.opensource.org/licenses/BSD-2-Clause">Simplified BSD</license>
 	<notes>-</notes>
+	
 	<contents>
-		<dir name="/">
+		<dir name="/" baseinstalldir="/">
+			<dir name="src">
+				<file role="src" name="php_geoipo.h" />
+				<file role="src" name="php_geoipo.c" />
+				<file role="src" name="class_geoip.h" />
+				<file role="src" name="class_geoip.c" />
+			</dir>
+			<file role="src" name="config.m4" />		
 			<file name="README" role="doc" />
-			<file baseinstalldir="/" name="geoipo" role="script" />
 		</dir>
 	</contents>
+	
 	<dependencies>
 		<required>
 			<php>
@@ -38,5 +46,11 @@
 			</pearinstaller>
 		</required>
 	</dependencies>
-	<phprelease />
+	
+	<providesextension>geoipo</providesextension>
+	<extsrcrelease>
+		<configureoption default="autodetect" name="with-geoipo" prompt="Please provide the prefix of the libGeoIP installation" />
+	</extsrcrelease>
+	
+	<changelog></changelog>
 </package>
