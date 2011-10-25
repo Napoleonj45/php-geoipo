@@ -7,7 +7,7 @@
 #include "TSRM.h"
 #endif
 
-#define PHP_GEOIPO_VERSION "1.0.0"
+#define PHP_GEOIPO_VERSION "1.0.1"
 #define PHP_GEOIPO_EXTNAME "geoipo"
 
 #include <GeoIP.h>
@@ -43,6 +43,8 @@ ZEND_EXTERN_MODULE_GLOBALS(geoipo)
 // geoip utility functions ///////////////
 
 void geoipo_zval_set_or_false(zval *, void *, long);
+void geoipo_property_set_or_false_from_zval(zval *, char *, zval *, long TSRMLS_DC);
+
 
 //////////////////////////////////////////
 // geoip record cache ////////////////////

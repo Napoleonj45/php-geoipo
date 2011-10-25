@@ -514,17 +514,18 @@ PHP_METHOD(GeoIP, getRecord) {
 	
 	//. build the return object.
 	object_init(return_value);
-	add_property_zval(return_value, "ContinentCode", cache->ContinentCode);
-	add_property_zval(return_value, "CountryCode",   cache->CountryCode);
-	add_property_zval(return_value, "CountryCode3",  cache->CountryCode3);
-	add_property_zval(return_value, "CountryName",   cache->CountryName);
-	add_property_zval(return_value, "RegionCode",    cache->RegionCode);
-	add_property_zval(return_value, "RegionName",    cache->RegionName);
-	add_property_zval(return_value, "City",          cache->City);
-	add_property_zval(return_value, "PostalCode",    cache->PostalCode);
-	add_property_zval(return_value, "Latitude",      cache->Latitude);
-	add_property_zval(return_value, "Longitude",     cache->Longitude);
-	add_property_zval(return_value, "TimeZone",      cache->TimeZone);
+	geoipo_property_set_or_false_from_zval(return_value, "ContinentCode", cache->ContinentCode, IS_STRING TSRMLS_CC);
+	geoipo_property_set_or_false_from_zval(return_value, "CountryCode",   cache->CountryCode,   IS_STRING TSRMLS_CC);
+	geoipo_property_set_or_false_from_zval(return_value, "CountryCode3",  cache->CountryCode3,  IS_STRING TSRMLS_CC);
+	geoipo_property_set_or_false_from_zval(return_value, "CountryName",   cache->CountryName,   IS_STRING TSRMLS_CC);
+	geoipo_property_set_or_false_from_zval(return_value, "RegionCode",    cache->RegionCode,    IS_STRING TSRMLS_CC);
+	geoipo_property_set_or_false_from_zval(return_value, "RegionName",    cache->RegionName,    IS_STRING TSRMLS_CC);
+	geoipo_property_set_or_false_from_zval(return_value, "City",          cache->City,          IS_STRING TSRMLS_CC);
+	geoipo_property_set_or_false_from_zval(return_value, "PostalCode",    cache->PostalCode,    IS_STRING TSRMLS_CC);
+	geoipo_property_set_or_false_from_zval(return_value, "Latitude",      cache->Latitude,      IS_DOUBLE TSRMLS_CC);
+	geoipo_property_set_or_false_from_zval(return_value, "Longitude",     cache->Longitude,     IS_DOUBLE TSRMLS_CC);
+	geoipo_property_set_or_false_from_zval(return_value, "TimeZone",      cache->TimeZone,      IS_STRING TSRMLS_CC);
+
 	return;
 }
 
@@ -567,11 +568,11 @@ PHP_METHOD(GeoIP, getRegion) {
 		}
 		
 		object_init(return_value);
-		add_property_zval(return_value, "CountryCode", cache->CountryCode);
-		add_property_zval(return_value, "RegionCode",  cache->RegionCode);
-		add_property_zval(return_value, "RegionName",  cache->RegionName);
-		add_property_zval(return_value, "TimeZone",    cache->TimeZone);
-		return;		
+		geoipo_property_set_or_false_from_zval(return_value, "CountryCode",   cache->CountryCode,   IS_STRING TSRMLS_CC);
+		geoipo_property_set_or_false_from_zval(return_value, "RegionCode",    cache->RegionCode,    IS_STRING TSRMLS_CC);
+		geoipo_property_set_or_false_from_zval(return_value, "RegionName",    cache->RegionName,    IS_STRING TSRMLS_CC);
+		geoipo_property_set_or_false_from_zval(return_value, "TimeZone",      cache->TimeZone,      IS_STRING TSRMLS_CC);
+		return;
 	}
 	
 	//. else use the city database.
@@ -596,10 +597,10 @@ PHP_METHOD(GeoIP, getRegion) {
 		}
 
 		object_init(return_value);
-		add_property_zval(return_value, "CountryCode", cache->CountryCode);
-		add_property_zval(return_value, "RegionCode",  cache->RegionCode);
-		add_property_zval(return_value, "RegionName",  cache->RegionName);
-		add_property_zval(return_value, "TimeZone",    cache->TimeZone);
+		geoipo_property_set_or_false_from_zval(return_value, "CountryCode",   cache->CountryCode,   IS_STRING TSRMLS_CC);
+		geoipo_property_set_or_false_from_zval(return_value, "RegionCode",    cache->RegionCode,    IS_STRING TSRMLS_CC);
+		geoipo_property_set_or_false_from_zval(return_value, "RegionName",    cache->RegionName,    IS_STRING TSRMLS_CC);
+		geoipo_property_set_or_false_from_zval(return_value, "TimeZone",      cache->TimeZone,      IS_STRING TSRMLS_CC);
 		return;
 	}
 	

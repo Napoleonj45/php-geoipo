@@ -98,6 +98,33 @@ geoipo_zval_set_or_false(zval *z, void *value, long type) {
 	return;
 }
 
+/* given an object, property, value, set the property to the value if
+it is the type we wanted. else set the type to boolean false. this is
+to force strings to copy for our result objects. */
+
+void
+geoipo_property_set_or_false_from_zval(zval *z, char *key, zval *value, long type TSRMLS_DC) {
+	if(value == NULL) {
+		add_property_bool(z,key,0);
+		return;
+	}
+
+	switch(type) {
+		case IS_DOUBLE: {
+			if(Z_TYPE_P(value) != IS_DOUBLE) add_property_bool(z,key,0);
+			else add_property_double(z,key,Z_DVAL_P(value));
+			break;
+		}
+		case IS_STRING: {
+			if(Z_TYPE_P(value) != IS_STRING) add_property_bool(z,key,0);
+			else add_property_string(z,key,Z_STRVAL_P(value),1);
+			break;
+		}
+	}
+	
+	return;
+}
+
 //////////////////////////////////////////
 // geoip record cache ////////////////////
 
