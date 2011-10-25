@@ -48,7 +48,7 @@ PHP_CHECK_LIBRARY(
 
 PHP_NEW_EXTENSION(
 	[geoipo],
-	[src/php_geoipo.c src/class_geoip.c],
+	[php_geoipo.c class_geoip.c],
 	[$ext_shared],
 	[]
 )

@@ -87,6 +87,6 @@ geoipo_region_cache *geoipo_region_get(char *);
 //////////////////////////////////////////
 
 #include "config.h"
-#include "src/class_geoip.h"
+#include "class_geoip.h"
 
 #endif
