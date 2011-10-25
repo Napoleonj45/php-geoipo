@@ -11,10 +11,10 @@
 		<active>yes</active>
 	</lead>
 	<date>2011-10-25</date>
-	<time>15:30:01</time>
+	<time>15:30:02</time>
 	<version>
-		<release>1.0.1</release>
-		<api>1.0.1</api>
+		<release>1.0.2</release>
+		<api>1.0.2</api>
 	</version>
 	<stability>
 		<release>stable</release>
@@ -31,6 +31,10 @@
 			<file role="src" name="class_geoip.c" />
 			<file role="src" name="config.m4" />	
 			<file name="README" role="doc" />
+			<dir name="extra">
+				<file role="php" name="geoip-compat.php" />
+				<file role="php" name="geoip-compat-test.php" />
+			</dir>
 			<dir name="examples">
 				<file role="php" name="cmp-region-geoip.php" />
 				<file role="php" name="cmp-region-geoipo.php" />
@@ -44,6 +48,8 @@
 				<file role="php" name="get-isp.php" />
 				<file role="php" name="get-record.php" />
 				<file role="php" name="get-region.php" />
+				<file role="php" name="get-region-name.php" />
+				<file role="php" name="get-time-zone.php" />
 				<file role="php" name="has-database.php" />
 				<file role="php" name="list-country-codes.php" />
 				<file role="php" name="list-databases.php" />

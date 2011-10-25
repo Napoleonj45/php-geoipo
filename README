@@ -36,6 +36,8 @@ Completed API:
 	Static Methods
 	string  GeoIP::getDatabaseFile(int dbid);
 	string  GeoIP::getDatabaseInfo(int dbid);
+	string  GeoIP::getRegionName(string ccode, string rcode);
+	string  GeoIP::getTimeZone(string ccode, string rcode);
 	boolean GeoIP::hasDatabase(int dbid);
 	void    GeoIP::init(optional string directory);
 	array   GeoIP::listCountryCodes(optional int len default 2);

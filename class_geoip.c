@@ -183,6 +183,56 @@ PHP_METHOD(GeoIP, getDatabaseInfo) {
 	return;
 }
 
+#pragma mark string GeoIP::getRegionName(string rcode);
+/* return the name of the region by the region code. */
+
+PHP_METHOD(GeoIP, getRegionName) {
+	char *ccode;
+	int ccodelen;
+	char *rcode;
+	int rcodelen;
+	const char *rname;
+
+	if(zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "ss", &ccode, &ccodelen, &rcode, &rcodelen) == FAILURE) {
+		RETURN_FALSE;
+	}
+	
+	rname = GeoIP_region_name_by_code(ccode,rcode);
+
+	if(rname == NULL) {
+		RETURN_BOOL(0);
+	} else {
+		RETURN_STRING(rname,1);
+	}
+	
+}
+
+#pragma mark string GeoIP::getTimeZone(string ccode, string rcode);
+/* return the timezone of a specific country region, by country and
+region. */
+
+PHP_METHOD(GeoIP, getTimeZone) {
+	char *ccode;
+	int ccodelen;
+	char *rcode;
+	int rcodelen;
+	const char *timezone;
+
+	if(zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "ss", &ccode, &ccodelen, &rcode, &rcodelen) == FAILURE) {
+		RETURN_FALSE;
+	}
+	
+	timezone = GeoIP_time_zone_by_country_and_region(ccode,rcode);
+	
+	if(timezone == NULL) {
+		RETURN_BOOL(0);
+	} else {
+		RETURN_STRING(timezone,1);
+	}
+
+	return;
+}
+
 #pragma mark boolean GeoIP::hasDatabase(int GeoIP::CONSTANT);
 /* returns a boolean value describing if the database you specified
 actually exists on disk for reals or not. */

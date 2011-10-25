@@ -76,12 +76,12 @@ function geoipo_region_by_name($host) {
 	return geoipo_falcon_punch_object($geo->getRegion());
 }
 
-function geoipo_region_name_by_code($rcode) {
-	// geoipo is too smart to implement this at the moment.
+function geoipo_region_name_by_code($ccode,$rcode) {
+	return GeoIP::getRegionName($ccode,$rcode);
 }
 
 function geoipo_time_zone_by_country_and_region($ccode,$rcode) {
-	// geoipo is too smart to implement this at the moment.
+	return GeoIP::getTimeZone($ccode,$rcode);
 }
 
 //////////////////////////////////////////

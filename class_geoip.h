@@ -20,6 +20,8 @@ void                         obj_geoip_free(void * TSRMLS_DC);
 // static methods.
 PHP_METHOD(GeoIP, getDatabaseFile);
 PHP_METHOD(GeoIP, getDatabaseInfo);
+PHP_METHOD(GeoIP, getRegionName);
+PHP_METHOD(GeoIP, getTimeZone);
 PHP_METHOD(GeoIP, hasDatabase);
 PHP_METHOD(GeoIP, init);
 PHP_METHOD(GeoIP, listCountryCodes);
@@ -39,6 +41,8 @@ PHP_METHOD(GeoIP, getRegion);
 static zend_function_entry   class_geoip_methods[] = {
 	PHP_ME(GeoIP, getDatabaseFile,  NULL, (ZEND_ACC_PUBLIC|ZEND_ACC_ALLOW_STATIC))
 	PHP_ME(GeoIP, getDatabaseInfo,  NULL, (ZEND_ACC_PUBLIC|ZEND_ACC_ALLOW_STATIC))
+	PHP_ME(GeoIP, getRegionName,    NULL, (ZEND_ACC_PUBLIC|ZEND_ACC_ALLOW_STATIC))
+	PHP_ME(GeoIP, getTimeZone,      NULL, (ZEND_ACC_PUBLIC|ZEND_ACC_ALLOW_STATIC))
 	PHP_ME(GeoIP, hasDatabase,      NULL, (ZEND_ACC_PUBLIC|ZEND_ACC_ALLOW_STATIC))
 	PHP_ME(GeoIP, init,             NULL, (ZEND_ACC_PUBLIC|ZEND_ACC_ALLOW_STATIC))
 	PHP_ME(GeoIP, listCountryCodes, NULL, (ZEND_ACC_PUBLIC|ZEND_ACC_ALLOW_STATIC))
