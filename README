@@ -17,6 +17,10 @@ Demo of it working on FreeBSD with PHP with ZTS:
 Quick How-To for setting up and using geoipo.
 	* http://squirrelshaterobots.com/programming/php/geoip-in-php-with-the-new-php-geoipo-extension/
 
+Installing with PECL/PEAR:
+	* pecl channel-discover pecl.squirrelshaterobots.com
+	* pecl install shr/geoipo
+
 --------
 
 Authors:
@@ -74,7 +78,13 @@ Other Important Notes:
 	
 	Tested On:
 		OS X Lion with the PHP it comes with and libGeoIP from source.
-		Ubuntu 11.04 with PHP and libGeoIP from the repositories.
+
+		Ubuntu 11.04 with PHP from the repo and libGeoIP from source. While
+		the package version number is correct something is wrong with
+		Ubuntu's package for libGeoIP that it seems to be missing a core
+		function in the library. Compiling the library from MaxMind's official
+		source with --prefix=/usr fixes the problem.
+
 		FreeBSD 8 with PHP (ZTS) and libGeoIP from ports.
 	
 	On UNIX style systems, the GeoIP database are usually found in
