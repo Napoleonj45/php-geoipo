@@ -68,7 +68,7 @@ function geoipo_org_by_name($host) {
 
 function geoipo_record_by_name($host) {
 	$geo = new GeoIP($host);
-	return geoipo_falcon_punch_object(clone($geo->getRecord()));
+	return geoipo_falcon_punch_object($geo->getRecord());
 }
 
 function geoipo_region_by_name($host) {
