@@ -1,5 +1,5 @@
 
-PHP_ARG_ENABLE(
+PHP_ARG_WITH(
 	geoipo,
 	[Whether to enable the "geoipo" extension],
 	[  --enable-geoipo      Enable "vehicles" extension support],
