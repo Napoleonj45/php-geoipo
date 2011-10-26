@@ -7,7 +7,7 @@
 #include "TSRM.h"
 #endif
 
-#define PHP_GEOIPO_VERSION "1.0.2"
+#define PHP_GEOIPO_VERSION "1.0.3"
 #define PHP_GEOIPO_EXTNAME "geoipo"
 
 #include <GeoIP.h>

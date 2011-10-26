@@ -396,8 +396,8 @@ PHP_METHOD(GeoIP, getContinentCode) {
 	ccode = GeoIP_id_by_name(geo,Z_STRVAL_P(host));
 	GeoIP_delete(geo);
 	
-	if(ccode == 0) return;
-	RETURN_STRING(GeoIP_country_continent[ccode],1)
+	if(ccode == 0) { RETURN_FALSE; }
+	else { RETURN_STRING(GeoIP_country_continent[ccode],1); }
 }
 
 #pragma mark string GeoIP->getCountryCode(optional int length default 2)
@@ -429,8 +429,8 @@ PHP_METHOD(GeoIP, getCountryCode) {
 	else             country = GeoIP_country_code_by_name(geo,Z_STRVAL_P(host));
 	GeoIP_delete(geo);
 
-	if(country == NULL) return;
-	RETURN_STRING(country,1);		
+	if(country == NULL) { RETURN_FALSE; }
+	else { RETURN_STRING(country,1); }
 }
 
 #pragma mark string GeoIP->getCountryName(void);
@@ -455,8 +455,8 @@ PHP_METHOD(GeoIP, getCountryName) {
 	country = GeoIP_country_name_by_name(geo,Z_STRVAL_P(host));
 	GeoIP_delete(geo);
 
-	if(country == NULL) return;
-	RETURN_STRING(country,1);	
+	if(country == NULL) { RETURN_FALSE; }
+	else { RETURN_STRING(country,1); }
 }
 
 #pragma mark int GeoIP->getID(void);
@@ -482,7 +482,8 @@ PHP_METHOD(GeoIP, getID) {
 	id = GeoIP_id_by_name(geo,Z_STRVAL_P(host));
 	GeoIP_delete(geo);
 
-	RETURN_LONG(id);
+	if(id == 0) { RETURN_FALSE; }
+	else { RETURN_LONG(id); }
 }
 
 PHP_METHOD(GeoIP, getISP) {
@@ -500,7 +501,7 @@ PHP_METHOD(GeoIP, getISP) {
 	}
 	
 	geo = GeoIP_open_type(GEOIP_ISP_EDITION,GEOIP_STANDARD);
-	isp = GeoIP_name_by_name(geo,Z_STRVAL_P(host));
+	isp = GeoIP_name_by_name(geo,Z_STRVAL_P(host)); // malloc'd
 	GeoIP_delete(geo);
 	
 	if(isp == NULL) {
