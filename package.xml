@@ -10,11 +10,11 @@
 		<email>bmajdak@php.net</email>
 		<active>yes</active>
 	</lead>
-	<date>2011-10-25</date>
-	<time>15:30:02</time>
+	<date>2011-10-26</date>
+	<time>15:30:01</time>
 	<version>
-		<release>1.0.2</release>
-		<api>1.0.2</api>
+		<release>1.0.3</release>
+		<api>1.0.3</api>
 	</version>
 	<stability>
 		<release>stable</release>
