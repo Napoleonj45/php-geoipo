@@ -10,6 +10,9 @@ for PHP.
 To do this the original would have required too much refactoring, so I have
 I have built this from the ground up.
 
+Documentation:
+	* http://squirrelshaterobots.com/projects/php-geoipo/
+
 Demo of it working on FreeBSD with PHP with ZTS:
 	* http://zenthis.org/tests/geoip.php
 	* there is a link at the bottom to view the source.
