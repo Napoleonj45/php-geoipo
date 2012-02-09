@@ -1,6 +1,9 @@
 PHP GeoIP OOP (geoipo)
 An object oriented PHP module for GeoIP from Maxmind.
 
+PHP 5.4.0 and Up: https://github.com/bobmajdakjr/php-geoipo/tree/php-5.4.0
+PHP 5.3.4 and Up: https://github.com/bobmajdakjr/php-geoipo/tree/php-5.3.4
+
 This project has been built to solve two problems of the current geoip module
 for PHP.
 
