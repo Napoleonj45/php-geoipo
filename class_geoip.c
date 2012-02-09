@@ -50,35 +50,21 @@ obj_geoip_new(zend_class_entry *ce TSRMLS_DC)
 	object->recordcache = NULL;
 	object->regioncache = NULL;
 	
-	ALLOC_HASHTABLE(object->std.properties);
-	zend_hash_init(
-		object->std.properties,
-		0,
-		NULL,
-		ZVAL_PTR_DTOR,
-		0
-	);
-	zend_hash_copy(
-		object->std.properties,
-		&ce->default_properties,
-		(copy_ctor_func_t)zval_add_ref,
-		NULL,
-		sizeof(zval *)
-	);
+	zend_object_std_init(&object->std, ce TSRMLS_CC);
+	object_properties_init(&object->std, ce);
 	
 	output.handle = zend_objects_store_put(
 		object,
 		NULL,
 		(zend_objects_free_object_storage_t)obj_geoip_free,
 		NULL TSRMLS_CC
-	);
-	
+	);	
 	output.handlers = &obj_geoip_handlers;
 	return output;
 }
 
 void
-obj_geoip_write_property(zval *object, zval *member, zval *value TSRMLS_DC) {
+obj_geoip_write_property(zval *object, zval *member, zval *value, const zend_literal *key TSRMLS_DC) {
 	obj_geoip_s *this = (obj_geoip_s *)zend_objects_get_address(object TSRMLS_CC);
 
 	//. if the host property of this object is changed then all caches should 
@@ -101,7 +87,8 @@ obj_geoip_write_property(zval *object, zval *member, zval *value TSRMLS_DC) {
 	zend_get_std_object_handlers()->write_property(
 		object,
 		member,
-		value TSRMLS_CC
+		value,
+		key TSRMLS_CC
 	);
 	
 	return;
@@ -370,7 +357,7 @@ PHP_METHOD(GeoIP, __construct) {
  
 	MAKE_STD_ZVAL(member); ZVAL_STRING(member,"host",1);
 	MAKE_STD_ZVAL(value); ZVAL_STRING(value,host,1);
-	obj_geoip_handlers.write_property(this,member,value TSRMLS_CC);
+	obj_geoip_handlers.write_property(this,member,value,0 TSRMLS_CC);
  	
  	return;
 }

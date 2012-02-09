@@ -14,7 +14,7 @@ extern char * custom_directory;
 extern zend_class_entry     *class_geoip_ce;
 static zend_object_handlers  obj_geoip_handlers;
 zend_object_value            obj_geoip_new(zend_class_entry * TSRMLS_DC);
-void                         obj_geoip_write_property(zval *, zval *, zval * TSRMLS_DC);
+void                         obj_geoip_write_property(zval *, zval *, zval *, const zend_literal * TSRMLS_DC);
 void                         obj_geoip_free(void * TSRMLS_DC);
 
 // static methods.
