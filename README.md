@@ -39,21 +39,21 @@ so I have I have built this from the ground up.
 
 Documentation
 ------------------------------
-	* http://squirrelshaterobots.com/projects/php-geoipo/
+ * http://squirrelshaterobots.com/projects/php-geoipo/
 
 Quick How-To
 ------------------------------
-	* http://squirrelshaterobots.com/programming/php/geoip-in-php-with-the-new-php-geoipo-extension/
+ * http://squirrelshaterobots.com/programming/php/geoip-in-php-with-the-new-php-geoipo-extension/
 
 Installing with PECL/PEAR
 ------------------------------
-	1. pecl channel-discover pecl.squirrelshaterobots.com
-	2. pecl install shr/geoipo
+ 1. pecl channel-discover pecl.squirrelshaterobots.com
+ 2. pecl install shr/geoipo
 
 
 Authors
 ------------------------------
-	* Bob Majdak Jr (@bobmajdakjr)
+ * Bob Majdak Jr (@bobmajdakjr)
 
 
 Completed API
