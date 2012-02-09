@@ -15,7 +15,7 @@ PHP 5.3 Support
 PHP 5.3.4 and Up: https://github.com/bobmajdakjr/php-geoipo/tree/php-5.3.4
 
 Project Details
-==============================
+------------------------------
 
 This project has been built to solve two problems of the current
 GeoIP module for PHP.
@@ -28,66 +28,66 @@ so I have I have built this from the ground up.
 
 
 Documentation
-==============================
+------------------------------
 	* http://squirrelshaterobots.com/projects/php-geoipo/
 
 Quick How-To
-==============================
+------------------------------
 	* http://squirrelshaterobots.com/programming/php/geoip-in-php-with-the-new-php-geoipo-extension/
 
 Installing with PECL/PEAR
-==============================
+------------------------------
 	1. pecl channel-discover pecl.squirrelshaterobots.com
 	2. pecl install shr/geoipo
 
 
 Authors
-==============================
+------------------------------
 	* Bob Majdak Jr (@bobmajdakjr)
 
 
 Completed API
-==============================
+------------------------------
 
-	Static Methods
-	string  GeoIP::getDatabaseFile(int dbid);
-	string  GeoIP::getDatabaseInfo(int dbid);
-	string  GeoIP::getRegionName(string ccode, string rcode);
-	string  GeoIP::getTimeZone(string ccode, string rcode);
-	boolean GeoIP::hasDatabase(int dbid);
-	void    GeoIP::init(optional string directory);
-	array   GeoIP::listCountryCodes(optional int len default 2);
-	array   GeoIP::listDatabases(void);
-	
-	Instance Properties
-	string  GeoIP->host
+### Static Methods
+	* string  GeoIP::getDatabaseFile(int dbid);
+	* string  GeoIP::getDatabaseInfo(int dbid);
+	* string  GeoIP::getRegionName(string ccode, string rcode);
+	* string  GeoIP::getTimeZone(string ccode, string rcode);
+	* boolean GeoIP::hasDatabase(int dbid);
+	* void    GeoIP::init(optional string directory);
+	* array   GeoIP::listCountryCodes(optional int len default 2);
+	* array   GeoIP::listDatabases(void);
 
-	Instance Methods
-	object  GeoIP->__construct(optional string host);
-	string  GeoIP->getContinentCode(void);
-	string  GeoIP->getCountryCode(optional int len default 2);
-	string  GeoIP->getCountryName(void);
-	int     GeoIP->getID(void);
-	string  GeoIP->getISP(void);
-	object  GeoIP->getRecord(void);
-	object  GeoIP->getRegion(void);
+### Instance Properties
+	* string  GeoIP->host
+
+### Instance Methods
+	* object  GeoIP->__construct(optional string host);
+	* string  GeoIP->getContinentCode(void);
+	* string  GeoIP->getCountryCode(optional int len default 2);
+	* string  GeoIP->getCountryName(void);
+	* int     GeoIP->getID(void);
+	* string  GeoIP->getISP(void);
+	* object  GeoIP->getRecord(void);
+	* object  GeoIP->getRegion(void);
 
 
 Requirements
-==============================
+------------------------------
 
 	* GeoIP C API Library from MaxMind (http://www.maxmind.com/app/c)
 	* Installed GeoIP Databases (if you actually want results...)
 	
 Really Important Notes
-==============================
+------------------------------
 
 It used to be important that both geoip and geoipo were not loaded at
 the same time, but I believes that no longer matters due to advances
 this module has made.
 	
 Other Important Notes
-==============================
+------------------------------
 	
 I have no Windows machines. There is no Windows build script nor do I
 know how to write one or how to Windows Windows Windows. If you are
@@ -96,7 +96,8 @@ build it I love you long time.
 
 
 Tested On
-==============================
+------------------------------
+
 	* OS X Lion with the PHP it comes with and libGeoIP from source.
 
 	* Ubuntu 11.04 with PHP from the repo and libGeoIP from source.
@@ -108,7 +109,7 @@ Tested On
 	* FreeBSD 8 with PHP (ZTS) and libGeoIP from ports.
 
 Databases
-==============================
+------------------------------
 
 On UNIX style systems, the GeoIP database are usually found in
 /usr/share/GeoIP, /usr/local/share/GeoIP, or some other path similar to
@@ -126,7 +127,7 @@ but will probably be more than good enough to get you rolling:
 
 
 Build Instructions
-==============================
+------------------------------
 
 This compiles just like any other module for PHP. Therefore you will need the
 PHP dev packages for your system installed if you did not compile your own PHP
@@ -147,7 +148,7 @@ from source.
 
 
 License Stuff
-==============================
+------------------------------
 
 This project and all its files (except for specific listed components) are
 licensed under the New BSD License. Here it is...
@@ -177,3 +178,5 @@ SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER
 CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR
 TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF
 THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+
+--------
