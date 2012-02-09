@@ -30,7 +30,7 @@ PHP_MINFO_FUNCTION(geoipo) {
 }
 
 //. stand alone functions.
-static function_entry geoipo_functions[] = {
+static zend_function_entry geoipo_functions[] = {
 	{NULL,NULL,NULL}
 };
 
