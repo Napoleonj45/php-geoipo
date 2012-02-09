@@ -5,11 +5,13 @@ An object oriented PHP module for GeoIP from Maxmind.
 
 
 PHP 5.4 Support
-==============================
+------------------------------
+
 PHP 5.4.0 and Up: https://github.com/bobmajdakjr/php-geoipo/tree/php-5.4.0
 
 PHP 5.3 Support
-==============================
+------------------------------
+
 PHP 5.3.4 and Up: https://github.com/bobmajdakjr/php-geoipo/tree/php-5.3.4
 
 Project Details
