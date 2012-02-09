@@ -163,7 +163,8 @@ License Stuff
 This project and all its files (except for specific listed components) are
 licensed under the New BSD License. Here it is...
 
---------
+------------------------------
+------------------------------
 
 Copyright (c) 2010-2011
 All rights reserved.
