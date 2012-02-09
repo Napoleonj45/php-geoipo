@@ -60,34 +60,34 @@ Completed API
 ------------------------------
 
 ### Static Methods
-	* string  GeoIP::getDatabaseFile(int dbid);
-	* string  GeoIP::getDatabaseInfo(int dbid);
-	* string  GeoIP::getRegionName(string ccode, string rcode);
-	* string  GeoIP::getTimeZone(string ccode, string rcode);
-	* boolean GeoIP::hasDatabase(int dbid);
-	* void    GeoIP::init(optional string directory);
-	* array   GeoIP::listCountryCodes(optional int len default 2);
-	* array   GeoIP::listDatabases(void);
+ * string  GeoIP::getDatabaseFile(int dbid);
+ * string  GeoIP::getDatabaseInfo(int dbid);
+ * string  GeoIP::getRegionName(string ccode, string rcode);
+ * string  GeoIP::getTimeZone(string ccode, string rcode);
+ * boolean GeoIP::hasDatabase(int dbid);
+ * void    GeoIP::init(optional string directory);
+ * array   GeoIP::listCountryCodes(optional int len default 2);
+ * array   GeoIP::listDatabases(void);
 
 ### Instance Properties
-	* string  GeoIP->host
+ * string  GeoIP->host
 
 ### Instance Methods
-	* object  GeoIP->__construct(optional string host);
-	* string  GeoIP->getContinentCode(void);
-	* string  GeoIP->getCountryCode(optional int len default 2);
-	* string  GeoIP->getCountryName(void);
-	* int     GeoIP->getID(void);
-	* string  GeoIP->getISP(void);
-	* object  GeoIP->getRecord(void);
-	* object  GeoIP->getRegion(void);
+ * object  GeoIP->__construct(optional string host);
+ * string  GeoIP->getContinentCode(void);
+ * string  GeoIP->getCountryCode(optional int len default 2);
+ * string  GeoIP->getCountryName(void);
+ * int     GeoIP->getID(void);
+ * string  GeoIP->getISP(void);
+ * object  GeoIP->getRecord(void);
+ * object  GeoIP->getRegion(void);
 
 
 Requirements
 ------------------------------
 
-	* GeoIP C API Library from MaxMind (http://www.maxmind.com/app/c)
-	* Installed GeoIP Databases (if you actually want results...)
+ * GeoIP C API Library from MaxMind (http://www.maxmind.com/app/c)
+ * Installed GeoIP Databases (if you actually want results...)
 	
 Really Important Notes
 ------------------------------
@@ -108,15 +108,15 @@ build it I love you long time.
 Tested On
 ------------------------------
 
-	* OS X Lion with the PHP it comes with and libGeoIP from source.
+ * OS X Lion with the PHP it comes with and libGeoIP from source.
 
-	* Ubuntu 11.04 with PHP from the repo and libGeoIP from source.
-	While the package version number is correct something is wrong with
-	Ubuntu's package for libGeoIP that it seems to be missing a core
-	function in the library. Compiling the library from MaxMind's
-	official source with --prefix=/usr fixes the problem.
+ * Ubuntu 11.04 with PHP from the repo and libGeoIP from source.
+   While the package version number is correct something is wrong with
+   Ubuntu's package for libGeoIP that it seems to be missing a core
+   function in the library. Compiling the library from MaxMind's
+   official source with --prefix=/usr fixes the problem.
 
-	* FreeBSD 8 with PHP (ZTS) and libGeoIP from ports.
+ * FreeBSD 8 with PHP (ZTS) and libGeoIP from ports.
 
 Databases
 ------------------------------
@@ -129,11 +129,11 @@ permissions, and extract your MaxMind databases into it.
 MaxMind provides two free databases that are updated only once a month,
 but will probably be more than good enough to get you rolling:
 	
-	* http://geolite.maxmind.com/download/geoip/database/GeoLiteCountry/GeoIP.dat.gz
-	* gunzip it and put it where it needs to be.
+ 1. http://geolite.maxmind.com/download/geoip/database/GeoLiteCountry/GeoIP.dat.gz
+ 2. gunzip it and put it where it needs to be.
 
-	* http://geolite.maxmind.com/download/geoip/database/GeoLiteCity.dat.gz
-	* gunzip it, rename it to GeoIPCity.dat, and put it where it needs to be.
+ 1. http://geolite.maxmind.com/download/geoip/database/GeoLiteCity.dat.gz
+ 2. gunzip it, rename it to GeoIPCity.dat, and put it where it needs to be.
 
 
 Build Instructions
@@ -143,18 +143,18 @@ This compiles just like any other module for PHP. Therefore you will need the
 PHP dev packages for your system installed if you did not compile your own PHP
 from source.
 
-	1) install libGeoIP.
-		* FreeBSD: /usr/ports/net/GeoIP
-		* Ubuntu: apt-get install libgeoip1 libgeoip-dev
-		* Else: http://www.maxmind.com/app/c
-		
-	2) install php-geoipo
-		* phpize && ./configure
-		* make
-		* make install
-		
-	3) add geoipo.so to your php.ini. and of course reload the webserver to
-	   reload the changes to the config if needed.
+ 1. install libGeoIP.
+    * FreeBSD: /usr/ports/net/GeoIP
+    * Ubuntu: apt-get install libgeoip1 libgeoip-dev
+    * Else: http://www.maxmind.com/app/c
+
+ 2. install php-geoipo
+    1. phpize && ./configure
+    2. make
+    3. make install
+
+ 3. add geoipo.so to your php.ini. and of course reload the webserver to
+    reload the changes to the config if needed.
 
 
 License Stuff
